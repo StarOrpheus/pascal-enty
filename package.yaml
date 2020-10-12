@@ -1,0 +1,51 @@
+name:                pascal-enty
+version:             0.1.0.0
+github:              "starorpheus/pascal-enty"
+license:             BSD3
+author:              "Zakhar Koval"
+maintainer:          "ellesterate@gmail.com"
+copyright:           "2020 Zakhar Koval"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/starorpheus/pascal-enty#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+  dependencies:
+  - array
+
+executables:
+  pascal-enty-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - pascal-enty
+
+tests:
+  pascal-enty-test:
+    main:                Main.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - pascal-enty
+    - hspec
