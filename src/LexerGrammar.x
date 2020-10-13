@@ -112,7 +112,7 @@ tokens :-
     $digit+ \. $digit+                              {\s -> TokenReal (read s) }
     
 {
-data GrammarToken = 
+data LexerToken = 
       TokenAND | TokenARRAY | TokenBEGIN | TokenBOOLEAN 
     | TokenCASE | TokenCHAR | TokenCHR | TokenCONST 
     | TokenDIV | TokenDO | TokenDOWNTO | TokenELSE 
