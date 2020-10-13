@@ -3,8 +3,10 @@ module Main (
             ) where 
 
 import LexerTests
+import ParserTests
 
 main :: IO ()
 main = do
     lexerTests
+    parserTests
     

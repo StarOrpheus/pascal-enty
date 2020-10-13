@@ -27,6 +27,7 @@ library
   exposed-modules:
       LexerGrammar
       Lib
+      ParserGrammar
   other-modules:
       Paths_pascal_enty
   hs-source-dirs:
@@ -53,6 +54,7 @@ test-suite pascal-enty-test
   main-is: Main.hs
   other-modules:
       LexerTests
+      ParserTests
       Paths_pascal_enty
   hs-source-dirs:
       test
