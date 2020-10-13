@@ -95,14 +95,10 @@ string
    ;
 
 type
-   : scalarType
-   | subrangeType
+   : subrangeType
    | typeIdentifier
    | stringtype
-   ;
-
-scalarType
-   : LPAREN identifierList RPAREN
+   | arrayType
    ;
 
 subrangeType
@@ -189,14 +185,12 @@ resultType
    ;
 
 statement
-   : simpleStatement
-   | structuredStatement
-   ;
-
-simpleStatement
    : assignmentStatement
    | procedureStatement
    | emptyStatement
+   | compoundStatement
+   | conditionalStatement
+   | repetetiveStatement
    ;
 
 assignmentStatement
@@ -280,12 +274,6 @@ emptyStatement
 empty
    :
    /* empty */
-   ;
-
-structuredStatement
-   : compoundStatement
-   | conditionalStatement
-   | repetetiveStatement
    ;
 
 compoundStatement
