@@ -26,6 +26,7 @@ library:
   source-dirs: src
   dependencies:
   - array
+  - mtl
 
 executables:
   pascal-enty-exe:

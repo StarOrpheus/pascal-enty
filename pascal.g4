@@ -115,7 +115,7 @@ stringtype
    ;
 
 arrayType
-   : ARRAY LBRACK typeList RBRACK OF componentType
+   : ARRAY LBRACK type RBRACK OF componentType
    ;
 
 typeList
