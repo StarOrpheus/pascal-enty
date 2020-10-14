@@ -38,6 +38,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - pascal-enty
+    - pretty-simple
 
 tests:
   pascal-enty-test:

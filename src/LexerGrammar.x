@@ -145,4 +145,3 @@ data Token =
 scanTokens :: String -> [Token]
 scanTokens = alexScanTokens
 }
-     
