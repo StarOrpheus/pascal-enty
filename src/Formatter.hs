@@ -82,7 +82,11 @@ instance InplaceRenderable PASTSignedFactor where
         Just op -> "(" ++ inplaceRender op ++ inplaceRender term ++ ")"
 
 joinRenderables :: InplaceRenderable a => [a] -> String -> String
-joinRenderables list separator = foldl' (\acc newVal -> acc ++ separator ++ inplaceRender newVal) "" list
+joinRenderables list separator =
+    let foldFunc acc newVal =
+            let prefix = if null acc then "" else acc ++ separator in
+                prefix ++ inplaceRender newVal in
+        foldl' foldFunc "" list
 
 instance InplaceRenderable PASTFactor where
     inplaceRender obj = case obj of
