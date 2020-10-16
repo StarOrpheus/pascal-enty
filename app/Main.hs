@@ -4,10 +4,12 @@ import System.Environment
 import System.IO
 
 import Text.Pretty.Simple (pPrint)
+import Data.List
 
 import Grammar
 import LexerGrammar
 import ParserGrammar
+import Formatter
 
 readContent :: FilePath -> IO String
 readContent fname = do
@@ -21,7 +23,13 @@ interpret kek = do
 
 pprint :: FilePath -> IO ()
 pprint fileName = do
-    return ()
+    code <- readContent fileName
+    let ast = parseExpr code
+    case ast of
+        Left error -> putStrLn error
+        Right ast -> do
+            let lines = pascalFormat ast
+            foldl' (\acc str -> acc >> putStrLn str) (return ()) lines
 
 dumpAst :: FilePath -> IO ()
 dumpAst fname = do
