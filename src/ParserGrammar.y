@@ -290,7 +290,7 @@ bool
 
 {
 parseError :: [Token] -> Except String a
-parseError (l:ls) = throwError $ "Unexpected token: " ++ (show l)
+parseError (l:ls) = throwError $ "Unexpected token: " ++ (show l) ++ " and " ++ (show $ 1 + length ls) ++ " left"
 parseError [] = throwError "Unexpected EOF"
 
 parseTokens :: [Token] -> Either String PASTProgram

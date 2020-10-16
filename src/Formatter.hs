@@ -112,15 +112,16 @@ instance InplaceRenderable PASTDeclVar where
     inplaceRender (PASTDeclVar name t) = name ++ ": " ++ inplaceRender t
 
 indent :: [String] -> [String]
-indent lst = foldl' (\acc newVal -> acc ++ ["    " ++ newVal]) [] lst
+indent = foldl' (\ acc newVal -> acc ++ ["    " ++ newVal]) []
 
 instance Renderable PASTProgramHeading where
     render (PASTProgramHeading []) = []
     render (PASTProgramHeading (a : as)) =
-        case (as) of
+        case as of
             [] -> ["program " ++ a ++ ";"]
             [x] -> ["program " ++ a ++ "(" ++ x ++ ");"]
-            otherwise -> error "Unexpected program heading: Too many identifiers"
+            _ -> error "Unexpected program heading: Too many identifiers"
+        ++ [""]
 
 renderStatementSeq :: [PASTStatement] -> [String]
 renderStatementSeq [] = []
