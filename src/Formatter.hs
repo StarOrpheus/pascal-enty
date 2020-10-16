@@ -49,8 +49,8 @@ instance InplaceRenderable Valueble where
 
 instance InplaceRenderable PascalType where
     inplaceRender obj = case obj of
-        PascalSubrangeType l r -> (show l) ++ ".." ++ (show r)
-        PascalArrayType indexT componentT -> "array[" ++ (inplaceRender indexT) ++ "] of " ++ (inplaceRender componentT)
+        PascalSubrangeType l r -> show l ++ ".." ++ show r
+        PascalArrayType indexT componentT -> "array[" ++ inplaceRender indexT ++ "] of " ++ inplaceRender componentT
         PascalIdentType ident -> inplaceRender ident
 
 instance InplaceRenderable PascalTypeIdentifier where
@@ -64,17 +64,17 @@ instance InplaceRenderable PascalTypeIdentifier where
 instance InplaceRenderable PASTExpression where
     inplaceRender (PASTExpression simple relPart) = case relPart of
         Nothing -> inplaceRender simple
-        Just (op, expr) -> "(" ++ inplaceRender simple ++ inplaceRender op ++ inplaceRender expr ++ ")"
+        Just (op, expr) -> "(" ++ inplaceRender simple ++ " " ++ inplaceRender op ++ " " ++ inplaceRender expr ++ ")"
 
 instance InplaceRenderable PASTSimpleExpession where
     inplaceRender (PASTSimpleExpession simple addPart) = case addPart of
         Nothing -> inplaceRender simple
-        Just (op, expr) -> "(" ++ inplaceRender simple ++ inplaceRender op ++ inplaceRender expr ++ ")"
+        Just (op, expr) -> "(" ++ inplaceRender simple ++ " " ++ inplaceRender op ++ " " ++ inplaceRender expr ++ ")"
 
 instance InplaceRenderable PASTTerm where
     inplaceRender (PASTTerm simple addPart) = case addPart of
         Nothing -> inplaceRender simple
-        Just (op, expr) -> "(" ++ inplaceRender simple ++ inplaceRender op ++ inplaceRender expr ++ ")"
+        Just (op, expr) -> "(" ++ inplaceRender simple ++ " " ++ inplaceRender op ++ " " ++ inplaceRender expr ++ ")"
 
 instance InplaceRenderable PASTSignedFactor where
     inplaceRender (PASTSignedFactor signum term) = case signum of
