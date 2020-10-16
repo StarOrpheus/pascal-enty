@@ -43,8 +43,8 @@ instance InplaceRenderable Valueble where
     inplaceRender obj = case obj of
         ValuebleInteger a -> show a
         ValuebleReal    a -> show a
-        ValuebleString  a -> show a
-        ValuebleBool    a -> show a
+        ValuebleString  a -> a
+        ValuebleBool    a -> if a then "true" else "false"
         ValuebleChar    a -> show a
 
 instance InplaceRenderable PascalType where
