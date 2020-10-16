@@ -157,10 +157,10 @@ variableDeclarationPart
     : VAR variableDeclarations                                                  { $2 }
 
 procedureAndFunctionDeclarationPart
-    : FUNCTION Identifier COLON type SEMI block                                 { PASTDeclFunction $2 $4 [] [] $6}
-    | FUNCTION Identifier formalParameterList COLON type SEMI block             { let (a, b) = $3 in PASTDeclFunction $2 $5 a b $7 }
-    | PROCEDURE Identifier SEMI block                                           { PASTDeclProcedure $2 [] [] $4}
-    | PROCEDURE Identifier formalParameterList SEMI block                       { let (a, b) = $3 in PASTDeclProcedure $2 a b $5 }
+    : FUNCTION Identifier COLON type SEMI block SEMI                            { PASTDeclFunction $2 $4 [] [] $6}
+    | FUNCTION Identifier formalParameterList COLON type SEMI block SEMI        { let (a, b) = $3 in PASTDeclFunction $2 $5 a b $7 }
+    | PROCEDURE Identifier SEMI block SEMI                                      { PASTDeclProcedure $2 [] [] $4}
+    | PROCEDURE Identifier formalParameterList SEMI block SEMI                  { let (a, b) = $3 in PASTDeclProcedure $2 a b $5 }
 
 formalParameterList
     : LPAREN formalParameterSections RPAREN                                     { $2 }
