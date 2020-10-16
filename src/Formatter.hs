@@ -103,7 +103,7 @@ instance InplaceRenderable PASTVariable where
 instance InplaceRenderable PASTForRange where
     inplaceRender obj = case obj of
         PASTForTo from to -> inplaceRender from ++ " to " ++ inplaceRender to
-        PASTForDownto from to -> inplaceRender from ++ " to " ++ inplaceRender to
+        PASTForDownto from to -> inplaceRender from ++ " downto " ++ inplaceRender to
 
 instance InplaceRenderable PASTDeclConst where
     inplaceRender (PASTDeclConst name value) = name ++ " = " ++ inplaceRender value
