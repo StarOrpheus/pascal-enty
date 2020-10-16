@@ -21,13 +21,13 @@ module Grammar  ( RelationalOperator(..)
                 , PASTProgram(..)
                 ) where
 
-data RelationalOperator = OperatorLT 
+data RelationalOperator = OperatorLT
                         | OperatorLE
                         | OperatorGT
                         | OperatorGE
                         | OperatorEQ
                         | OperatorNE
-                        deriving (Eq, Show) 
+                        deriving (Eq, Show)
 
 data FactorSignum = SignPLUS
                   | SignMINUS
@@ -37,7 +37,7 @@ data AdditiveOperator = OperatorPLUS
                       | OperatorMINUS
                       | OperatorOR
                       deriving (Eq, Show)
-        
+
 data MultiplicativeOperator = OperatorSTAR
                             | OperatorSLASH
                             | OperatorMOD
@@ -45,13 +45,9 @@ data MultiplicativeOperator = OperatorSTAR
                             | OperatorAND
                             deriving (Eq, Show)
 
-data PASTProgramHeading = PASTProgramHeading 
-    { programNameIdents :: [String]
-    } deriving (Eq, Show)
-
-data Valueble = ValuebleInteger Int 
+data Valueble = ValuebleInteger Int
               | ValuebleReal    Double
-              | ValuebleString  String 
+              | ValuebleString  String
               | ValuebleBool    Bool
               | ValuebleChar    Char
               deriving (Eq, Show)
@@ -71,28 +67,33 @@ data PascalTypeIdentifier = PascalInteger
                           | PascalChar
                           deriving (Eq, Show)
 
-data PASTDeclConst = PASTDeclConst 
+data PASTDeclConst = PASTDeclConst
     { constName       :: String
     , constValue      :: Valueble
     } deriving (Eq, Show)
 
-data PASTDeclVar = PASTDeclVar 
+data PASTDeclVar = PASTDeclVar
     { varDeclName     :: String
     , varDeclType     :: PascalType
     } deriving (Eq, Show)
 
-data PASTFunctionalDecl = PASTDeclFunction  
+
+data PASTProgramHeading = PASTProgramHeading
+    { programNameIdents :: [String]
+    } deriving (Eq, Show)
+
+data PASTFunctionalDecl = PASTDeclFunction
                             { functionName           :: String
                             , functionResultType     :: PascalType
                             , functionParamList      :: [PASTDeclVar]
                             , functionParamVarList   :: [PASTDeclVar]
-                            , functionBlock          :: PASTProgramBlock 
+                            , functionBlock          :: PASTProgramBlock
                             }
                         | PASTDeclProcedure
                             { functionName           :: String
                             , functionParamList      :: [PASTDeclVar]
                             , functionParamVarList   :: [PASTDeclVar]
-                            , functionBlock          :: PASTProgramBlock 
+                            , functionBlock          :: PASTProgramBlock
                             }
                         deriving (Eq, Show)
 
@@ -108,12 +109,12 @@ data PASTFactor = PASTFactorVariable PASTVariable
 
 data PASTSignedFactor = PASTSignedFactor
     { signedFactorSignum    :: Maybe FactorSignum
-    , signedFactor          :: PASTFactor      
+    , signedFactor          :: PASTFactor
     } deriving (Eq, Show)
 
 data PASTTerm = PASTTerm
     { termFactor            :: PASTSignedFactor
-    , termMulPart           :: Maybe (MultiplicativeOperator, PASTTerm) 
+    , termMulPart           :: Maybe (MultiplicativeOperator, PASTTerm)
     } deriving (Eq, Show)
 
 data PASTSimpleExpession = PASTSimpleExpession
@@ -123,7 +124,7 @@ data PASTSimpleExpession = PASTSimpleExpession
 
 data PASTExpression = PASTExpression
     { expressionSimplePart  :: PASTSimpleExpession
-    , expressionRelPart     :: Maybe (RelationalOperator, PASTExpression)  
+    , expressionRelPart     :: Maybe (RelationalOperator, PASTExpression)
     } deriving (Eq, Show)
 
 data PASTVariable = PASTVariable
@@ -136,12 +137,12 @@ data PASTForRange = PASTForTo PASTExpression PASTExpression
                   deriving (Eq, Show)
 
 data PASTStatement  = PASTCompoundStatement [PASTStatement]
-                    | PASTAssignStatement 
-                        { assignStatementVar        :: PASTVariable 
+                    | PASTAssignStatement
+                        { assignStatementVar        :: PASTVariable
                         , assignStatementExpr       :: PASTExpression
                         }
-                    | PASTProcedureStatement 
-                        { procedureStatementIdent   :: String 
+                    | PASTProcedureStatement
+                        { procedureStatementIdent   :: String
                         , procedureStatementParams  :: [PASTExpression]
                         }
                     | PASTEmptyStatement    {- :) -}
@@ -161,14 +162,14 @@ data PASTStatement  = PASTCompoundStatement [PASTStatement]
                         }
                     deriving (Eq, Show)
 
-data PASTProgramBlock = PASTProgramBlock 
+data PASTProgramBlock = PASTProgramBlock
     { blockConstDeclPart    :: [PASTDeclConst]
-    , blockVarDeclPart      :: [PASTDeclVar]  
+    , blockVarDeclPart      :: [PASTDeclVar]
     , blockFunctionalPart   :: [PASTFunctionalDecl]
     , blockStatement        :: PASTStatement
     } deriving (Eq, Show)
 
-data PASTProgram = PASTProgram 
+data PASTProgram = PASTProgram
     { programHeading        :: PASTProgramHeading
     , programBlock          :: PASTProgramBlock
     } deriving (Eq, Show)

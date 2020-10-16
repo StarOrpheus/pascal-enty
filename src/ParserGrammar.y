@@ -93,10 +93,10 @@ import Control.Monad.Except
 program
     : programHeading block DOT                                                  { PASTProgram $1 $2 }
 
-programHeading 
+programHeading
     : PROGRAM Identifier SEMI                                                   { PASTProgramHeading [$2] }
     | PROGRAM Identifier LPAREN identifierList RPAREN SEMI                      { PASTProgramHeading ($2 : $4) }
-    | {- Empty heading -}                                                       { PASTProgramHeading [] } 
+    | {- Empty heading -}                                                       { PASTProgramHeading [] }
 
 identifierList
     : Identifier                                                                { [$1] }
@@ -197,7 +197,7 @@ assignmentStatement
 
 variable
     : Identifier                                                                { PASTVariable $1 [] }
-    | Identifier LBRACK expressionList RBRACK                                   { PASTVariable $1 $3 }                            
+    | Identifier LBRACK expression RBRACK                                       { PASTVariable $1 [$3] }
 
 procedureStatement
     : Identifier                                                                { PASTProcedureStatement $1 [] }
@@ -245,7 +245,7 @@ signedFactor
     | factorSignum factor                                                       { PASTSignedFactor (Just $1) $2 }
 
 factor
-    : variable                                                                  { PASTFactorVariable $1 }                                                  
+    : variable                                                                  { PASTFactorVariable $1 }
     | LPAREN expression RPAREN                                                  { PASTFactorCompound $2 }
     | functionDesignator                                                        { $1 }
     | unsignedConstant                                                          { PASTUnsignedConstant $1 }
@@ -260,7 +260,7 @@ unsignedConstant
     | Real                                                                      { ValuebleReal $1 }
     | String                                                                    { ValuebleString $1 }
 
-relationaloperator 
+relationaloperator
     : EQ                                                                        { OperatorEQ }
     | NEQ                                                                       { OperatorNE }
     | LT                                                                        { OperatorLT }
@@ -297,19 +297,19 @@ parseTokens :: [Token] -> Either String PASTProgram
 parseTokens = runExcept . pascalParse
 
 parseExpr :: String -> Either String PASTProgram
-parseExpr str = runExcept $ do 
+parseExpr str = runExcept $ do
     let tokenStream = scanTokens str
     pascalParse tokenStream
 
-combineVarDecls :: ([PASTDeclVar], [PASTDeclVar]) 
-                -> ([PASTDeclVar], [PASTDeclVar]) 
+combineVarDecls :: ([PASTDeclVar], [PASTDeclVar])
+                -> ([PASTDeclVar], [PASTDeclVar])
                 -> ([PASTDeclVar], [PASTDeclVar])
 combineVarDecls (l1, l2) (r1, r2) = (l1 ++ r1, l2 ++ r2)
 
 combineDecls :: ([PASTDeclConst], [PASTDeclVar], [PASTFunctionalDecl])
              -> ([PASTDeclConst], [PASTDeclVar], [PASTFunctionalDecl])
              -> ([PASTDeclConst], [PASTDeclVar], [PASTFunctionalDecl])
-combineDecls (l1, l2, l3) (r1, r2, r3) = (l1 ++ r1, l2 ++ r2, l3 ++ r3)     
+combineDecls (l1, l2, l3) (r1, r2, r3) = (l1 ++ r1, l2 ++ r2, l3 ++ r3)
 
 zipVarDecls :: [String] -> PascalType -> [PASTDeclVar]
 zipVarDecls varNames typ = foldl' (\acc newVal -> acc ++ [PASTDeclVar newVal typ]) [] varNames
