@@ -13,9 +13,8 @@ import Formatter
 
 readContent :: FilePath -> IO String
 readContent fname = do
-    fileHandler <- openFile fname ReadMode
-    code <- hGetContents fileHandler
-    return code
+    code <- readFile fname
+    return $ seq (length code) code
 
 interpret :: FilePath -> IO ()
 interpret kek = do
@@ -46,4 +45,4 @@ main = do
         "run" -> interpret filename
         "pprint" -> pprint filename
         "dump" -> dumpAst filename
-        otherwise -> error "Unexpected run format!\nUsage enty (run|pprint) filename.pas"
+        _ -> error "Unexpected run format!\nUsage enty (run|pprint) filename.pas"
