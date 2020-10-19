@@ -1,5 +1,5 @@
 # pascal-enty
-Simplified pascal enterpreter and pretty printer, written in Haskell. Try example:
+Simplified pascal interpreter and pretty printer, written in Haskell. Try example:
 
 ```stack run pprint assets/ComplexExample.pas```
 
