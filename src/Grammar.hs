@@ -21,6 +21,8 @@ module Grammar  ( RelationalOperator(..)
                 , PASTProgram(..)
                 ) where
 
+import Data.Array ( Array )
+
 data RelationalOperator = OperatorLT
                         | OperatorLE
                         | OperatorGT
@@ -50,6 +52,7 @@ data Valueble = ValuebleInteger Int
               | ValuebleString  String
               | ValuebleBool    Bool
               | ValuebleChar    Char
+              | ValuebleArray   (Array Int Valueble)
               deriving (Eq, Show)
 
 data PascalType = PascalSubrangeType Int Int

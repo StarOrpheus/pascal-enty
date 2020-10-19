@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: d7efa728cb1ae3a7b44c5e9ee9e6e404a6bb39bf83ea60b870d83a602c87c709
 
 name:           pascal-enty
 version:        0.1.0.0
@@ -27,6 +29,7 @@ library
   exposed-modules:
       Formatter
       Grammar
+      Interpreter
       LexerGrammar
       ParserGrammar
   other-modules:
@@ -36,6 +39,7 @@ library
   build-depends:
       array
     , base >=4.7 && <5
+    , containers
     , mtl
   default-language: Haskell2010
 

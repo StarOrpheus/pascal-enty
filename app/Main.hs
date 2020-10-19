@@ -11,14 +11,21 @@ import LexerGrammar
 import ParserGrammar
 import Formatter
 
+import Interpreter
+
 readContent :: FilePath -> IO String
 readContent fname = do
     code <- readFile fname
     return $ seq (length code) code
 
 interpret :: FilePath -> IO ()
-interpret kek = do
-    return ()
+interpret fileName = do
+    code <- readContent fileName
+    let ast' = parseExpr code
+    case ast' of
+        Left error -> putStrLn error
+        Right ast -> runProgram ast
+
 
 pprint :: FilePath -> IO ()
 pprint fileName = do
