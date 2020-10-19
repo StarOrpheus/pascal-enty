@@ -169,15 +169,15 @@ instance Renderable PASTStatement where
         ("for " ++ varName ++ " := " ++ inplaceRender range ++ " do") : renderIndented stmt
 
 instance Renderable PASTFunctionalDecl where
-    render (PASTDeclFunction funcName resultType paramList varList block) =
+    render (PASTDeclFunction funcName resultType paramList block) =
         let params = joinRenderables paramList ", " in
-            let varParams = if null paramList then "" else "; var " ++ joinRenderables varList ", " in
-        ("function " ++ funcName ++ "(" ++ params ++ varParams ++ "): " ++ inplaceRender resultType ++ ";") : appendSemi (render block)
-    render (PASTDeclProcedure funcName paramList varList block) =
+            -- let varParams = if null paramList then "" else "; var " ++ joinRenderables varList ", " in
+        ("function " ++ funcName ++ "(" ++ params ++ "): " ++ inplaceRender resultType ++ ";") : appendSemi (render block)
+    render (PASTDeclProcedure funcName paramList block) =
         let params = joinRenderables paramList ", " in
-            let paramsSeparator = if null paramList then "" else "; " in
-                let varParams = paramsSeparator ++ "var " ++ joinRenderables varList ", " in
-        ("procedure " ++ funcName ++ "(" ++ params ++ varParams ++ ");") : appendSemi (render block)
+            -- let paramsSeparator = if null paramList then "" else "; " in
+                -- let varParams = paramsSeparator ++ "var " ++ joinRenderables varList ", " in
+        ("procedure " ++ funcName ++ "(" ++ params ++ ");") : appendSemi (render block)
 
 instance Renderable PASTProgramBlock where
     render (PASTProgramBlock constDecls varDecls funDecls statement) =

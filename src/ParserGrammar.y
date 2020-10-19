@@ -157,21 +157,20 @@ variableDeclarationPart
     : VAR variableDeclarations                                                  { $2 }
 
 procedureAndFunctionDeclarationPart
-    : FUNCTION Identifier COLON type SEMI block SEMI                            { PASTDeclFunction $2 $4 [] [] $6}
-    | FUNCTION Identifier formalParameterList COLON type SEMI block SEMI        { let (a, b) = $3 in PASTDeclFunction $2 $5 a b $7 }
-    | PROCEDURE Identifier SEMI block SEMI                                      { PASTDeclProcedure $2 [] [] $4}
-    | PROCEDURE Identifier formalParameterList SEMI block SEMI                  { let (a, b) = $3 in PASTDeclProcedure $2 a b $5 }
+    : FUNCTION Identifier COLON type SEMI block SEMI                            { PASTDeclFunction $2 $4 [] $6}
+    | FUNCTION Identifier formalParameterList COLON type SEMI block SEMI        { PASTDeclFunction $2 $5 $3 $7 }
+    | PROCEDURE Identifier SEMI block SEMI                                      { PASTDeclProcedure $2 [] $4}
+    | PROCEDURE Identifier formalParameterList SEMI block SEMI                  { PASTDeclProcedure $2 $3 $5 }
 
 formalParameterList
     : LPAREN formalParameterSections RPAREN                                     { $2 }
 
 formalParameterSections
     : formalParameterSection                                                    { $1 }
-    | formalParameterSection SEMI formalParameterSections                       { combineVarDecls $1 $3 }
+    -- | formalParameterSection SEMI formalParameterSection                        { combineVarDecls $1 $3 }
 
 formalParameterSection
-   : parameterGroup                                                             { ($1, []) }
-   | VAR parameterGroup                                                         { ([], $2) }
+   : parameterGroup                                                             { $1 }
 
 parameterGroup
    : identifierList COLON typeIdentifier                                        { zipVarDecls $1 (PascalIdentType $3) }

@@ -7,18 +7,23 @@ VAR
     i, j, tmp, size: integer;
     arr: ARRAY [1..50] OF Integer;
 
-PROCEDURE ReadArr(VAR size: Integer);
+PROCEDURE ReadArr;
 BEGIN
 	readln(size);
     for i := 1 to size do
         read(arr[i]);
 END;
 
+function wrongSum(a, b : integer): integer;
 BEGIN
-    ReadArr(size);
+    getSum := kek + a + b;
+END;
+
+BEGIN
+    ReadArr;
 
     FOR i := size - 1 DOWNTO 1 DO
-        FOR j := 1 TO i DO 
+        FOR j := 1 TO i DO
             IF arr[j] > arr[j + 1] THEN BEGIN
                 tmp := arr[j];
                 arr[j] := arr[j + 1];
@@ -27,5 +32,7 @@ BEGIN
 
 	writeln('Size: ', size);
     FOR i := 1 TO size DO
-        write(arr[i], ' ')
+        write(arr[i], ' ');
+    tmp := wrongSum(42, 16);
+    writeln('Wrong sum = ', tmp);
 END.

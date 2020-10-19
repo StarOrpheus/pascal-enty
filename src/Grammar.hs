@@ -78,7 +78,7 @@ data PASTDeclVar = PASTDeclVar
     } deriving (Eq, Show)
 
 
-data PASTProgramHeading = PASTProgramHeading
+newtype PASTProgramHeading = PASTProgramHeading
     { programNameIdents :: [String]
     } deriving (Eq, Show)
 
@@ -86,13 +86,13 @@ data PASTFunctionalDecl = PASTDeclFunction
                             { functionName           :: String
                             , functionResultType     :: PascalType
                             , functionParamList      :: [PASTDeclVar]
-                            , functionParamVarList   :: [PASTDeclVar]
+                            -- , functionParamVarList   :: [PASTDeclVar] -- TODO: not supported
                             , functionBlock          :: PASTProgramBlock
                             }
                         | PASTDeclProcedure
                             { functionName           :: String
                             , functionParamList      :: [PASTDeclVar]
-                            , functionParamVarList   :: [PASTDeclVar]
+                            -- , functionParamVarList   :: [PASTDeclVar]
                             , functionBlock          :: PASTProgramBlock
                             }
                         deriving (Eq, Show)
