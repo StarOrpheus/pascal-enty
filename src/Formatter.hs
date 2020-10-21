@@ -1,4 +1,6 @@
 module Formatter ( pascalFormat
+                 , inplaceRender
+                 , render
                  ) where
 
 import Grammar
