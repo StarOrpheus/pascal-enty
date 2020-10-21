@@ -2,13 +2,13 @@ module StdLib (
                 checkStandardProcCall
               ) where
 
+import Formatter (inplaceRender)
 import Grammar
 import InterpreterState
-import Formatter ( inplaceRender )
 
-import Data.List ( foldl' )
+import Control.Exception (throwIO)
 import Control.Monad.State
-import Control.Exception ( throwIO )
+import Data.List (foldl')
 
 showValueble :: Valueble
              -> String

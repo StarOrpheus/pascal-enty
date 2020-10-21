@@ -24,22 +24,22 @@ instance InplaceRenderable RelationalOperator where
 
 instance InplaceRenderable FactorSignum where
     inplaceRender obj = case obj of
-        SignPLUS -> "+"
+        SignPLUS  -> "+"
         SignMINUS -> "-"
 
 instance InplaceRenderable AdditiveOperator where
     inplaceRender obj = case obj of
-        OperatorPLUS -> "+"
+        OperatorPLUS  -> "+"
         OperatorMINUS -> "-"
-        OperatorOR -> "or"
+        OperatorOR    -> "or"
 
 instance InplaceRenderable MultiplicativeOperator where
     inplaceRender obj = case obj of
-        OperatorSTAR -> "*"
+        OperatorSTAR  -> "*"
         OperatorSLASH -> "/"
-        OperatorMOD -> "mod"
-        OperatorDIV -> "div"
-        OperatorAND -> "and"
+        OperatorMOD   -> "mod"
+        OperatorDIV   -> "div"
+        OperatorAND   -> "and"
 
 instance InplaceRenderable Valueble where
     inplaceRender obj = case obj of
@@ -58,10 +58,10 @@ instance InplaceRenderable PascalType where
 instance InplaceRenderable PascalTypeIdentifier where
     inplaceRender obj = case obj of
         PascalInteger -> "integer"
-        PascalReal -> "real"
-        PascalString -> "string"
-        PascalBool -> "bool"
-        PascalChar -> "char"
+        PascalReal    -> "real"
+        PascalString  -> "string"
+        PascalBool    -> "bool"
+        PascalChar    -> "char"
 
 instance InplaceRenderable PASTExpression where
     inplaceRender (PASTExpression simple relPart) = case relPart of
@@ -92,11 +92,11 @@ joinRenderables list separator =
 
 instance InplaceRenderable PASTFactor where
     inplaceRender obj = case obj of
-        PASTFactorVariable var -> inplaceRender var
-        PASTFactorCompound expr -> "(" ++ inplaceRender expr ++ ")"
+        PASTFactorVariable var               -> inplaceRender var
+        PASTFactorCompound expr              -> "(" ++ inplaceRender expr ++ ")"
         PASTFunctionDisignator funcName args -> funcName ++ "(" ++ joinRenderables args ", " ++ ")"
-        PASTUnsignedConstant val -> inplaceRender val
-        PASTFactorNot factor -> "not " ++ inplaceRender factor
+        PASTUnsignedConstant val             -> inplaceRender val
+        PASTFactorNot factor                 -> "not " ++ inplaceRender factor
 
 instance InplaceRenderable PASTVariable where
     inplaceRender (PASTVariable varName inds) =
@@ -104,7 +104,7 @@ instance InplaceRenderable PASTVariable where
 
 instance InplaceRenderable PASTForRange where
     inplaceRender obj = case obj of
-        PASTForTo from to -> inplaceRender from ++ " to " ++ inplaceRender to
+        PASTForTo from to     -> inplaceRender from ++ " to " ++ inplaceRender to
         PASTForDownto from to -> inplaceRender from ++ " downto " ++ inplaceRender to
 
 instance InplaceRenderable PASTDeclConst where
@@ -120,13 +120,13 @@ instance Renderable PASTProgramHeading where
     render (PASTProgramHeading []) = []
     render (PASTProgramHeading (a : as)) =
         case as of
-            [] -> ["program " ++ a ++ ";"]
+            []  -> ["program " ++ a ++ ";"]
             [x] -> ["program " ++ a ++ "(" ++ x ++ ");"]
-            _ -> error "Unexpected program heading: Too many identifiers"
+            _   -> error "Unexpected program heading: Too many identifiers"
         ++ [""]
 
 appendLastLine :: String -> [String] -> [String]
-appendLastLine _ [] = []
+appendLastLine _ []    = []
 appendLastLine str lst = init lst ++ [last lst ++ str]
 
 appendSemi :: [String] -> [String]
@@ -137,18 +137,18 @@ renderStatementSeq [] = []
 renderStatementSeq lst = renderStListImpl [] lst
     where
         renderStListImpl :: [String] -> [PASTStatement] -> [String]
-        renderStListImpl acc [] = acc
+        renderStListImpl acc []       = acc
         renderStListImpl acc (a : as) = renderStListImpl (appendSemi acc ++ render a) as
 
 renderIndented :: PASTStatement -> [String]
 renderIndented obj = case obj of
-    PASTCompoundStatement _         -> render obj
-    PASTEmptyStatement              -> render obj
-    PASTAssignStatement _ _         -> indent $ render obj
-    PASTProcedureStatement _ _      -> indent $ render obj
-    PASTConditionalStatement {}     -> indent $ render obj
-    PASTWhileStatement _ _          -> indent $ render obj
-    PASTForStatement {}             -> indent $ render obj
+    PASTCompoundStatement _     -> render obj
+    PASTEmptyStatement          -> render obj
+    PASTAssignStatement _ _     -> indent $ render obj
+    PASTProcedureStatement _ _  -> indent $ render obj
+    PASTConditionalStatement {} -> indent $ render obj
+    PASTWhileStatement _ _      -> indent $ render obj
+    PASTForStatement {}         -> indent $ render obj
 
 instance Renderable PASTStatement where
     render (PASTCompoundStatement ss) =
@@ -205,7 +205,7 @@ instance Renderable PASTProgramBlock where
                             prefix ++ render newVal ++ [""]
 
             prepFunDecls :: [PASTFunctionalDecl] -> [String]
-            prepFunDecls [] = []
+            prepFunDecls []  = []
             prepFunDecls fns = joinFunDecls fns
 
 instance Renderable PASTProgram where

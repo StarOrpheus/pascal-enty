@@ -21,7 +21,7 @@ module Grammar  ( RelationalOperator(..)
                 , PASTProgram(..)
                 ) where
 
-import Data.Array ( Array )
+import Data.Array (Array)
 
 data RelationalOperator = OperatorLT
                         | OperatorLE
@@ -57,8 +57,8 @@ data Valueble = ValuebleInteger Int
 
 data PascalType = PascalSubrangeType Int Int
                 | PascalArrayType
-                    { arrayIndexType        :: PascalType
-                    , arrayComponentType    :: PascalTypeIdentifier
+                    { arrayIndexType     :: PascalType
+                    , arrayComponentType :: PascalTypeIdentifier
                     }
                 | PascalIdentType PascalTypeIdentifier
                 deriving (Eq, Show)
@@ -71,13 +71,13 @@ data PascalTypeIdentifier = PascalInteger
                           deriving (Eq, Show)
 
 data PASTDeclConst = PASTDeclConst
-    { constName       :: String
-    , constValue      :: Valueble
+    { constName  :: String
+    , constValue :: Valueble
     } deriving (Eq, Show)
 
 data PASTDeclVar = PASTDeclVar
-    { varDeclName     :: String
-    , varDeclType     :: PascalType
+    { varDeclName :: String
+    , varDeclType :: PascalType
     } deriving (Eq, Show)
 
 
@@ -86,53 +86,53 @@ newtype PASTProgramHeading = PASTProgramHeading
     } deriving (Eq, Show)
 
 data PASTFunctionalDecl = PASTDeclFunction
-                            { functionName           :: String
-                            , functionResultType     :: PascalType
-                            , functionParamList      :: [PASTDeclVar]
+                            { functionName       :: String
+                            , functionResultType :: PascalType
+                            , functionParamList  :: [PASTDeclVar]
                             -- , functionParamVarList   :: [PASTDeclVar] -- TODO: not supported
-                            , functionBlock          :: PASTProgramBlock
+                            , functionBlock      :: PASTProgramBlock
                             }
                         | PASTDeclProcedure
-                            { functionName           :: String
-                            , functionParamList      :: [PASTDeclVar]
+                            { functionName      :: String
+                            , functionParamList :: [PASTDeclVar]
                             -- , functionParamVarList   :: [PASTDeclVar]
-                            , functionBlock          :: PASTProgramBlock
+                            , functionBlock     :: PASTProgramBlock
                             }
                         deriving (Eq, Show)
 
 data PASTFactor = PASTFactorVariable PASTVariable
                 | PASTFactorCompound PASTExpression
                 | PASTFunctionDisignator
-                    { functionDisignatorName    :: String
-                    , functionDisignatorParams  :: [PASTExpression]
+                    { functionDisignatorName   :: String
+                    , functionDisignatorParams :: [PASTExpression]
                     }
                 | PASTUnsignedConstant Valueble
                 | PASTFactorNot PASTFactor
                 deriving (Eq, Show)
 
 data PASTSignedFactor = PASTSignedFactor
-    { signedFactorSignum    :: Maybe FactorSignum
-    , signedFactor          :: PASTFactor
+    { signedFactorSignum :: Maybe FactorSignum
+    , signedFactor       :: PASTFactor
     } deriving (Eq, Show)
 
 data PASTTerm = PASTTerm
-    { termFactor            :: PASTSignedFactor
-    , termMulPart           :: Maybe (MultiplicativeOperator, PASTTerm)
+    { termFactor  :: PASTSignedFactor
+    , termMulPart :: Maybe (MultiplicativeOperator, PASTTerm)
     } deriving (Eq, Show)
 
 data PASTSimpleExpession = PASTSimpleExpession
-    { simpleExprTerm        :: PASTTerm
-    , simpleExprAddPArt     :: Maybe (AdditiveOperator, PASTSimpleExpession)
+    { simpleExprTerm    :: PASTTerm
+    , simpleExprAddPArt :: Maybe (AdditiveOperator, PASTSimpleExpession)
     } deriving (Eq, Show)
 
 data PASTExpression = PASTExpression
-    { expressionSimplePart  :: PASTSimpleExpession
-    , expressionRelPart     :: Maybe (RelationalOperator, PASTExpression)
+    { expressionSimplePart :: PASTSimpleExpession
+    , expressionRelPart    :: Maybe (RelationalOperator, PASTExpression)
     } deriving (Eq, Show)
 
 data PASTVariable = PASTVariable
-    { variableName          :: String
-    , variableSubscript     :: [PASTExpression]
+    { variableName      :: String
+    , variableSubscript :: [PASTExpression]
     } deriving (Eq, Show)
 
 data PASTForRange = PASTForTo PASTExpression PASTExpression
@@ -141,38 +141,38 @@ data PASTForRange = PASTForTo PASTExpression PASTExpression
 
 data PASTStatement  = PASTCompoundStatement [PASTStatement]
                     | PASTAssignStatement
-                        { assignStatementVar        :: PASTVariable
-                        , assignStatementExpr       :: PASTExpression
+                        { assignStatementVar  :: PASTVariable
+                        , assignStatementExpr :: PASTExpression
                         }
                     | PASTProcedureStatement
-                        { procedureStatementIdent   :: String
-                        , procedureStatementParams  :: [PASTExpression]
+                        { procedureStatementIdent  :: String
+                        , procedureStatementParams :: [PASTExpression]
                         }
                     | PASTEmptyStatement    {- :) -}
                     | PASTConditionalStatement
-                        { conditionalExpr           :: PASTExpression
-                        , conditionalThenStatement  :: PASTStatement
-                        , conditionalElseStatement  :: Maybe PASTStatement
+                        { conditionalExpr          :: PASTExpression
+                        , conditionalThenStatement :: PASTStatement
+                        , conditionalElseStatement :: Maybe PASTStatement
                         }
                     | PASTWhileStatement
-                        { whileConditionalExpr      :: PASTExpression
-                        , whileStatements           :: PASTStatement
+                        { whileConditionalExpr :: PASTExpression
+                        , whileStatements      :: PASTStatement
                         }
                     | PASTForStatement
-                        { forStatementIdent         :: String
-                        , forStatementRange         :: PASTForRange
-                        , forStatement              :: PASTStatement
+                        { forStatementIdent :: String
+                        , forStatementRange :: PASTForRange
+                        , forStatement      :: PASTStatement
                         }
                     deriving (Eq, Show)
 
 data PASTProgramBlock = PASTProgramBlock
-    { blockConstDeclPart    :: [PASTDeclConst]
-    , blockVarDeclPart      :: [PASTDeclVar]
-    , blockFunctionalPart   :: [PASTFunctionalDecl]
-    , blockStatement        :: PASTStatement
+    { blockConstDeclPart  :: [PASTDeclConst]
+    , blockVarDeclPart    :: [PASTDeclVar]
+    , blockFunctionalPart :: [PASTFunctionalDecl]
+    , blockStatement      :: PASTStatement
     } deriving (Eq, Show)
 
 data PASTProgram = PASTProgram
-    { programHeading        :: PASTProgramHeading
-    , programBlock          :: PASTProgramBlock
+    { programHeading :: PASTProgramHeading
+    , programBlock   :: PASTProgramBlock
     } deriving (Eq, Show)

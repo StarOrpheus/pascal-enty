@@ -24,17 +24,16 @@ import Prelude hiding (lookup)
 
 import Grammar
 
-import Data.Map ( Map, fromList, lookup, insert , delete )
-import Control.Monad.State
-    ( MonadIO(liftIO), MonadState(put, get), StateT )
-import Control.Exception ( throwIO, Exception )
+import Control.Exception (Exception, throwIO)
+import Control.Monad.State (MonadIO (liftIO), MonadState (get, put), StateT)
+import Data.Array ((//))
 import Data.List (foldl')
-import Data.Array ( (//) )
+import Data.Map (Map, delete, fromList, insert, lookup)
 
 data InterpreterState = InterpreterState
-    { stateVarValues        :: Map String Valueble
-    , stateDeclFunctions    :: Map String PASTFunctionalDecl
-    , stateDeclProcedures   :: Map String PASTFunctionalDecl
+    { stateVarValues      :: Map String Valueble
+    , stateDeclFunctions  :: Map String PASTFunctionalDecl
+    , stateDeclProcedures :: Map String PASTFunctionalDecl
     } deriving (Show)
 
 newInterpreterState :: InterpreterState
@@ -70,8 +69,8 @@ getVarValue varName = do
     (InterpreterState varValues _ _) <- get
     let res = lookup varName varValues
     case res of
-        Nothing     -> liftIO $ throwIO $ RuntimeError $ "Cannot find variable, named " ++ show varName
-        Just res    -> return res
+        Nothing  -> liftIO $ throwIO $ RuntimeError $ "Cannot find variable, named " ++ show varName
+        Just res -> return res
 
 assignVar :: String
           -> Valueble
@@ -99,8 +98,8 @@ getFunction funcName = do
     (InterpreterState _ funcDecls _) <- get
     let res = lookup funcName funcDecls
     case res of
-        Nothing     -> liftIO $ throwIO $ RuntimeError $ "No such function, named " ++ show funcName
-        Just res    -> return res
+        Nothing  -> liftIO $ throwIO $ RuntimeError $ "No such function, named " ++ show funcName
+        Just res -> return res
 
 getProcedure :: String
              -> ExecutionMonad PASTFunctionalDecl
@@ -108,8 +107,8 @@ getProcedure funName = do
     (InterpreterState _ _ procDecls) <- get
     let res = lookup funName procDecls
     case res of
-        Nothing     -> liftIO $ throwIO $ RuntimeError $ "No such function, named " ++ show funName
-        Just res    -> return res
+        Nothing  -> liftIO $ throwIO $ RuntimeError $ "No such function, named " ++ show funName
+        Just res -> return res
 
 declVar :: PASTDeclVar
         -> Valueble
@@ -182,8 +181,8 @@ undeclVars =
            (return ())
 
 data PASTEvaluatedVariable = PASTEvaluatedVariable
-    { varName       :: String
-    , varSubscript  :: [Valueble]
+    { varName      :: String
+    , varSubscript :: [Valueble]
     } deriving (Eq, Show)
 
 updateVariable :: PASTEvaluatedVariable

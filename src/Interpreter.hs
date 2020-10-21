@@ -12,16 +12,15 @@ import Prelude hiding (lookup)
 import Grammar
 import StdLib
 
-import InterpreterState
-import Data.Map ( lookup , member, intersectionWithKey)
-import Data.List (foldl', elem)
-import Data.Array ( (!), array, (//) )
-import Data.Char ( toLower )
-import Data.Foldable (forM_)
+import Control.Exception (throwIO)
 import Control.Monad (when)
-import Control.Monad.State
-    ( MonadIO(liftIO), MonadState(put, get), StateT(runStateT) )
-import Control.Exception ( throwIO )
+import Control.Monad.State (MonadIO (liftIO), MonadState (get, put), StateT (runStateT))
+import Data.Array (array, (!), (//))
+import Data.Char (toLower)
+import Data.Foldable (forM_)
+import Data.List (elem, foldl')
+import Data.Map (intersectionWithKey, lookup, member)
+import InterpreterState
 
 incVar :: String
        -> ExecutionMonad ()
@@ -164,9 +163,9 @@ instance CallableBinaryOperator AdditiveOperator where
                        -> ExecutionMonad Valueble
     callBinaryOperator op lhs rhs =
         case op of
-            OperatorPLUS -> callAdd lhs rhs
+            OperatorPLUS  -> callAdd lhs rhs
             OperatorMINUS -> callSub lhs rhs
-            OperatorOR -> callOr lhs rhs
+            OperatorOR    -> callOr lhs rhs
 
 
 instance CallableBinaryOperator MultiplicativeOperator where
@@ -176,11 +175,11 @@ instance CallableBinaryOperator MultiplicativeOperator where
                        -> ExecutionMonad Valueble
     callBinaryOperator op lhs rhs =
         case op of
-            OperatorSTAR -> callStar lhs rhs
+            OperatorSTAR  -> callStar lhs rhs
             OperatorSLASH -> callSlash lhs rhs
-            OperatorMOD -> callMod lhs rhs
-            OperatorDIV -> callDiv lhs rhs
-            OperatorAND -> callAnd lhs rhs
+            OperatorMOD   -> callMod lhs rhs
+            OperatorDIV   -> callDiv lhs rhs
+            OperatorAND   -> callAnd lhs rhs
 
 
 class Runnable a where
@@ -416,7 +415,7 @@ splitFuncProcDecls :: [PASTFunctionalDecl]
                    -> ([PASTFunctionalDecl], [PASTFunctionalDecl])
 splitFuncProcDecls lst = do
     let isFunctional decl = case decl of
-            PASTDeclFunction {} -> True
+            PASTDeclFunction {}  -> True
             PASTDeclProcedure {} -> False
     let firstPart = filter isFunctional lst
     let secPart = filter (not . isFunctional) lst

@@ -3,13 +3,13 @@ module Main where
 import System.Environment
 import System.IO
 
-import Text.Pretty.Simple (pPrint)
 import Data.List
+import Text.Pretty.Simple (pPrint)
 
+import Formatter
 import Grammar
 import LexerGrammar
 import ParserGrammar
-import Formatter
 
 import Interpreter
 
@@ -24,7 +24,7 @@ interpret fileName = do
     let ast' = parseExpr code
     case ast' of
         Left error -> putStrLn error
-        Right ast -> runProgram ast
+        Right ast  -> runProgram ast
 
 
 pprint :: FilePath -> IO ()
@@ -49,7 +49,7 @@ main :: IO ()
 main = do
     [runFormat, filename] <- getArgs
     case runFormat of
-        "run" -> interpret filename
+        "run"    -> interpret filename
         "pprint" -> pprint filename
-        "dump" -> dumpAst filename
-        _ -> error "Unexpected run format!\nUsage enty (run|pprint) filename.pas"
+        "dump"   -> dumpAst filename
+        _        -> error "Unexpected run format!\nUsage enty (run|pprint) filename.pas"
