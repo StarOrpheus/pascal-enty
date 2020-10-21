@@ -1,73 +1,27 @@
 {-# LANGUAGE InstanceSigs #-}
 
 module Interpreter ( runProgram
+                   , ExecutionMonad
+                   , Evaluatable
+                   , evalExpr
                    ) where
 
 
 import Prelude hiding (lookup)
 
 import Grammar
+import StdLib
 
-import Data.Map ( Map, lookup, insert , member, delete, mapMaybeWithKey, fromList)
-
-import Data.List (foldl')
-
+import InterpreterState
+import Data.Map ( lookup , member, intersectionWithKey)
+import Data.List (foldl', elem)
 import Data.Array ( (!), array, (//) )
-
+import Data.Char ( toLower )
 import Data.Foldable (forM_)
-
 import Control.Monad (when)
-
 import Control.Monad.State
-
-import Control.Exception ( throwIO, Exception )
-
-data InterpreterState = InterpreterState
-    { stateVarValues        :: Map String Valueble
-    , stateDeclFunctions    :: Map String PASTFunctionalDecl
-    , stateDeclProcedures   :: Map String PASTFunctionalDecl
-    } deriving (Show)
-
-newInterpreterState :: InterpreterState
-newInterpreterState = InterpreterState (fromList []) (fromList []) (fromList [])
-
-type ExecutionMonad a = StateT InterpreterState IO a
-
-newtype RuntimeError = RuntimeError String
-
-instance Show RuntimeError where
-    show ~(RuntimeError er) = er
-
-instance Exception RuntimeError
-
-getVarValue :: String
-            -> ExecutionMonad Valueble
-getVarValue varName = do
-    (InterpreterState varValues _ _) <- get
-    let res = lookup varName varValues
-    case res of
-        Nothing     -> liftIO $ throwIO $ RuntimeError $ "Cannot find variable, named " ++ show varName
-        Just res    -> return res
-
-assignVar :: String
-          -> Valueble
-          -> ExecutionMonad ()
-assignVar varName varValue = do
-    state@(InterpreterState varValues _ _) <- get
-    case (lookup varName varValues, varValue) of
-        (Nothing, _) -> liftIO $ throwIO $ RuntimeError $ "Assigning non-existing variable " ++ show varName
-                               ++ " := " ++ show varValue
-        (Just (ValuebleInteger _), ValuebleInteger _) -> return ()
-        (Just (ValuebleReal _), ValuebleReal _) -> return ()
-        (Just (ValuebleString _), ValuebleString _) -> return ()
-        (Just (ValuebleBool _), ValuebleBool _) -> return ()
-        (Just (ValuebleChar _), ValuebleChar _) -> return ()
-        (Just (ValuebleArray _), ValuebleArray _) -> return ()
-        (Just oldVal, newValue) -> liftIO $ throwIO $ RuntimeError $ "Assinging variable a value of different type: "
-                       ++ "Old value=" ++ show oldVal
-                       ++ " and new=" ++ show newValue
-    let newMap = insert varName varValue varValues
-    put state { stateVarValues = newMap }
+    ( MonadIO(liftIO), MonadState(put, get), StateT(runStateT) )
+import Control.Exception ( throwIO )
 
 incVar :: String
        -> ExecutionMonad ()
@@ -83,25 +37,11 @@ decVar varName = do
     newValue <- callSub oldValue (ValuebleInteger 1)
     assignVar varName newValue
 
-
-getFunction :: String
-            -> ExecutionMonad PASTFunctionalDecl
-getFunction funcName = do
-    (InterpreterState _ funcDecls _) <- get
-    let res = lookup funcName funcDecls
-    case res of
-        Nothing     -> liftIO $ throwIO $ RuntimeError $ "No such function, named " ++ show funcName
-        Just res    -> return res
-
-getProcedure :: String
-             -> ExecutionMonad PASTFunctionalDecl
-getProcedure funName = do
-    (InterpreterState _ _ procDecls) <- get
-    let res = lookup funName procDecls
-    case res of
-        Nothing     -> liftIO $ throwIO $ RuntimeError $ "No such function, named " ++ show funName
-        Just res    -> return res
-
+evalVariable :: PASTVariable
+             -> ExecutionMonad PASTEvaluatedVariable
+evalVariable ~(PASTVariable varName xs) = do
+    subs <- traverse evalExpr xs
+    return $ PASTEvaluatedVariable varName subs
 
 cmp :: Valueble -> Valueble -> ExecutionMonad Ordering
 cmp lhs' rhs' = case (lhs', rhs') of
@@ -283,96 +223,14 @@ instance Evaluatable PASTSignedFactor where
                     ValuebleReal    a -> return (ValuebleReal (-a))
                     _                 -> liftIO $ throwIO $ RuntimeError $ "Cannot call unary minus on " ++ show rhs'
 
-assertTypeMatch :: Valueble
-                -> PascalType
-                -> ExecutionMonad ()
-assertTypeMatch value typ =
-    case (value, typ) of
-        (ValuebleInteger _, PascalIdentType PascalInteger) -> return ()
-        (ValuebleReal _, PascalIdentType PascalReal) -> return ()
-        (ValuebleString _, PascalIdentType PascalString) -> return ()
-        (ValuebleBool _, PascalIdentType PascalBool) -> return ()
-        (ValuebleChar _, PascalIdentType PascalChar) -> return ()
-        (ValuebleArray _, PascalArrayType _ _) -> return ()
-        _ -> liftIO $ throwIO $ RuntimeError $ "Types not matched: expected " ++ show typ
-                       ++ ", got " ++ show value
-
-declVar :: PASTDeclVar
-        -> Valueble
-        -> ExecutionMonad ()
-declVar ~(PASTDeclVar varName varType) value = do
-    assertTypeMatch value varType
-    state@(InterpreterState valuesMap _ _) <- get
-    let newMap = insert varName value valuesMap
-    put state { stateVarValues = newMap }
-
-declVars :: [PASTDeclVar]
-         -> [Valueble]
-         -> ExecutionMonad ()
-declVars vars vals =
-    foldl' (\acc (newVar, newVal)
-            -> acc >> declVar newVar newVal)
-           (return ())
-           (zip vars vals)
-
-declConst :: PASTDeclConst
-          -> ExecutionMonad ()
-declConst ~(PASTDeclConst name value) = do
-    state@(InterpreterState valuesMap _ _) <- get
-    let newMap = insert name value valuesMap
-    put state { stateVarValues = newMap }
-
-declConsts :: [PASTDeclConst]
-           -> ExecutionMonad ()
-declConsts =
-    foldl' (\acc decl -> acc >> declConst decl)
-           (return ())
-
-declFunc :: PASTFunctionalDecl
-         -> ExecutionMonad ()
-declFunc ~self@(PASTDeclFunction name _ _ _) = do
-    state@(InterpreterState _ funDecls _) <- get
-    let newMap = insert name self funDecls
-    put state { stateDeclFunctions = newMap }
-
-declFunctions :: [PASTFunctionalDecl]
-              -> ExecutionMonad ()
-declFunctions =
-    foldl' (\acc decl -> acc >> declFunc decl)
-           (return ())
-
-declProc :: PASTFunctionalDecl
-         -> ExecutionMonad ()
-declProc ~self@(PASTDeclProcedure name _ _) = do
-    state@(InterpreterState _ _ procDecls) <- get
-    let newMap = insert name self procDecls
-    put state { stateDeclProcedures = newMap }
-
-declProcedures :: [PASTFunctionalDecl]
-               -> ExecutionMonad ()
-declProcedures =
-    foldl' (\acc decl -> acc >> declProc decl)
-           (return ())
-
-undeclVar :: String
-          -> ExecutionMonad ()
-undeclVar varName = do
-    state@(InterpreterState valuesMap _ _) <- get
-    let newMap = delete varName valuesMap
-    put state { stateVarValues = newMap }
-
-undeclVars :: [String]
-           -> ExecutionMonad ()
-undeclVars =
-    foldl' (\acc newName -> acc >> undeclVar newName)
-           (return ())
-
 defaultValue :: PascalType
              -> ExecutionMonad Valueble
 defaultValue typ =
     case typ of
         PascalArrayType (PascalSubrangeType from to) componentT
-            -> return $ ValuebleArray $ array (from, to)  []
+            -> do
+                defaultComponent <- defaultValue $ PascalIdentType componentT
+                return $ ValuebleArray $ array (from, to)  [(i, defaultComponent) | i <- [from .. to]]
         PascalIdentType PascalInteger
             -> return $ ValuebleInteger 0
         PascalIdentType PascalReal
@@ -400,14 +258,14 @@ callFunction ~(PASTDeclFunction funName resultType paramDecls block)
     else do
         savedState <- get
         funDefValue <- defaultValue resultType
-        let (InterpreterState oldVarValues oldFuncDecls oldProcDecls) = savedState
+        let (InterpreterState oldVarValues _ _) = savedState
         let declList = PASTDeclVar funName resultType : paramDecls
         let declValList = funDefValue : params
         declVars declList declValList
         run block
         funcResult <- getVarValue funName
-        let staleVars = filter (`member` oldVarValues) (fmap varDeclName declList)
-        undeclVars staleVars
+        currentState <- get
+        put $ updateState savedState currentState declList [] []
         return funcResult
 
 callProcedure :: PASTFunctionalDecl
@@ -423,13 +281,12 @@ callProcedure ~(PASTDeclProcedure funName paramDecls block)
                    ++ "but " ++ show actualLen ++ " provided"
     else do
         savedState <- get
-        let (InterpreterState oldVarValues oldFuncDecls oldProcDecls) = savedState
         let declList = paramDecls
         let declValList = params
         declVars declList declValList
         run block
-        let staleVars = filter (`member` oldVarValues) (fmap varDeclName declList)
-        undeclVars staleVars
+        currentState <- get
+        put $ updateState savedState currentState declList [] []
         return ()
 
 instance Evaluatable PASTFactor where
@@ -475,37 +332,25 @@ runFor varName tilValue stmnt = do
         stmnt
         runFor varName tilValue stmnt
 
-updateVariable :: PASTVariable
-               -> Valueble
-               -> ExecutionMonad ()
-updateVariable ~self@(PASTVariable varName xs)
-               newValue = do
-    value <- getVarValue varName
-    case (value, length xs) of
-        (ValuebleArray _, 0) -> liftIO $ throwIO $ RuntimeError "Assigning array is prohibited, maybe you forgot operator[]?"
-        (ValuebleArray arr, 1) -> do
-            index <- evalExpr $ head xs
-            case index of
-                ValuebleInteger ind -> assignVar varName $ ValuebleArray (arr // [(ind, newValue)])
-                _ -> liftIO $ throwIO $ RuntimeError $ "Array index must be int " ++ show (head xs) ++ " = " ++ show index
-        (ValuebleArray _, _) -> liftIO $ throwIO $ RuntimeError $ "Too many args in operator[]: " ++ show self
-        (_, 0) -> assignVar varName newValue
-        (_, _) -> liftIO $ throwIO $ RuntimeError $ "Too many args in operator[]: " ++ show self
-
-
 instance Runnable PASTStatement where
     run :: PASTStatement -> ExecutionMonad ()
     run (PASTCompoundStatement stmnts) =
         foldl' (\acc newStatement -> acc >> run newStatement)
                (return ())
                stmnts
-    run (PASTAssignStatement variable value') = do
+    run (PASTAssignStatement var' value') = do
         value <- evalExpr value'
-        updateVariable variable value
+        var <- evalVariable var'
+        updateVariable var value
     run (PASTProcedureStatement funName params') = do
         params <- traverse evalExpr params'
-        proc <- getProcedure funName
-        callProcedure proc params
+        let maybeStandard = checkStandardProcCall (map toLower funName) params' evalExpr
+        case maybeStandard of
+            Nothing -> do
+                proc <- getProcedure funName
+                callProcedure proc params
+            Just standardCall ->
+                standardCall
     run PASTEmptyStatement = return ()
     run (PASTConditionalStatement expr thenCase elseCase) = do
         value' <- evalExpr expr
@@ -526,26 +371,46 @@ instance Runnable PASTStatement where
         when value $ run stmnt >> run self
     run (PASTForStatement varName range@(PASTForTo from' to') stmnt') = do
         from <- evalExpr from'
-        to <- evalExpr to'
+        to1 <- evalExpr to'
+        to <- callAdd to1 (ValuebleInteger 1)
         assignVar varName from
         let stmnt = run stmnt' >> incVar varName
         runFor varName to stmnt
     run (PASTForStatement varName range@(PASTForDownto from' to') stmnt') = do
         from <- evalExpr from'
-        to <- evalExpr to'
+        to1 <- evalExpr to'
+        to <- callSub to1 (ValuebleInteger 1)
         assignVar varName from
         let stmnt = run stmnt' >> decVar varName
         runFor varName to stmnt
 
 updateState :: InterpreterState
             -> InterpreterState
+            -> [PASTDeclVar] -- -> [PASTDeclConst]
+            -> [PASTFunctionalDecl] -> [PASTFunctionalDecl]
             -> InterpreterState
 updateState ~(InterpreterState oldVarValues oldFunDecls oldProcDecls)
-            ~(InterpreterState newVarValues newFunDecls newProcDecls) = do
-    let varValues = mapMaybeWithKey (\k _ -> lookup k oldVarValues) newVarValues
-    let funcDecls = mapMaybeWithKey (\k _ -> lookup k oldFunDecls) newFunDecls
-    let procDecls = mapMaybeWithKey (\k _ -> lookup k oldProcDecls) newProcDecls
+            ~(InterpreterState newVarValues newFunDecls newProcDecls)
+            varDecls functionDecls procDecls = do
+
+    let varIsLocal varName = varName `elem` (varDeclName <$> varDecls)
+    let funcIsLocal funName = funName `elem` (functionName <$> functionDecls)
+    let procIsLocal procName = procName `elem` (functionName <$> procDecls)
+
+    let chooseVar key oldValue newValue =
+            if varIsLocal key then oldValue else newValue
+
+    let chooseFunc key oldValue newValue =
+            if funcIsLocal key then oldValue else newValue
+
+    let chooseProc key oldValue newValue =
+            if procIsLocal key then oldValue else newValue
+
+    let varValues = intersectionWithKey chooseVar oldVarValues newVarValues
+    let funcDecls = intersectionWithKey chooseFunc oldFunDecls newFunDecls
+    let procDecls = intersectionWithKey chooseProc oldFunDecls newFunDecls
     InterpreterState varValues funcDecls procDecls
+
 
 splitFuncProcDecls :: [PASTFunctionalDecl]
                    -> ([PASTFunctionalDecl], [PASTFunctionalDecl])
@@ -559,7 +424,7 @@ splitFuncProcDecls lst = do
 
 instance Runnable PASTProgramBlock where
     run :: PASTProgramBlock -> ExecutionMonad ()
-    run ~self@(PASTProgramBlock constDecls varDecls funDecls' block) = do
+    run ~(PASTProgramBlock constDecls varDecls funDecls' block) = do
         oldState <- get
         defaultValues <- traverse (defaultValue . varDeclType) varDecls
         declConsts constDecls
@@ -571,7 +436,7 @@ instance Runnable PASTProgramBlock where
         run block
 
         currentState <- get
-        put (updateState oldState currentState)
+        put (updateState oldState currentState varDecls funDecls procDecls)
 
 runProgram :: PASTProgram -> IO ()
 runProgram prog = do
