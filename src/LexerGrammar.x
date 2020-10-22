@@ -118,6 +118,7 @@ tokens :-
     $digit+ \. $digit+                              { \pos s -> Token (TokenReal (read s)) pos }
 
 {
+--- Pascal grammar token type representation
 data TokenType =
       TokenAND | TokenARRAY | TokenBEGIN | TokenBOOLEAN
     | TokenCASE | TokenCHAR | TokenCHR | TokenCONST
@@ -143,6 +144,7 @@ data TokenType =
     | TokenReal Double
     deriving (Eq, Show)
 
+--- Pascal token with source location
 data Token = Token
     { tokenType         :: TokenType
     , sourceLocation    :: AlexPosn
@@ -153,6 +155,7 @@ instance Show Token where
          (show tokenType)
      ++ "(" ++ show lineNum ++ "; " ++ show colNum ++ ")"
 
+--- Parse the given String into Tokens
 scanTokens :: String -> [Token]
 scanTokens = alexScanTokens
 }

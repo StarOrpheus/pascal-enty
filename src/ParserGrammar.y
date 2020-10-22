@@ -292,9 +292,11 @@ parseError :: [Token] -> Except String a
 parseError (l:ls) = throwError $ "Syntax error: unexpected token " ++ (show l) ++ " and " ++ (show $ length ls) ++ " left"
 parseError [] = throwError "Unexpected EOF"
 
+--- Parse Tokens into AST or return String with error message
 parseTokens :: [Token] -> Either String PASTProgram
 parseTokens = runExcept . pascalParse
 
+--- Parse String into AST or return String with error message
 parseExpr :: String -> Either String PASTProgram
 parseExpr str = runExcept $ do
     let tokenStream = scanTokens str

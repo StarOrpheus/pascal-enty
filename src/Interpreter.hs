@@ -1,9 +1,6 @@
 {-# LANGUAGE InstanceSigs #-}
 
 module Interpreter ( runProgram
-                   , ExecutionMonad
-                   , Evaluatable
-                   , evalExpr
                    ) where
 
 
@@ -15,11 +12,11 @@ import StdLib
 import Control.Exception (throwIO)
 import Control.Monad (when)
 import Control.Monad.State (MonadIO (liftIO), MonadState (get, put), StateT (runStateT))
-import Data.Array (array, (!), (//))
+import Data.Array (array, (!))
 import Data.Char (toLower)
 import Data.Foldable (forM_)
 import Data.List (elem, foldl')
-import Data.Map (intersectionWithKey, lookup, member)
+import Data.Map (intersectionWithKey)
 import InterpreterState
 
 incVar :: String
@@ -264,7 +261,7 @@ callFunction ~(PASTDeclFunction funName resultType paramDecls block)
         run block
         funcResult <- getVarValue funName
         currentState <- get
-        put $ updateState savedState currentState declList [] []
+        put $ updateState savedState currentState declList
         return funcResult
 
 callProcedure :: PASTFunctionalDecl
@@ -285,7 +282,7 @@ callProcedure ~(PASTDeclProcedure funName paramDecls block)
         declVars declList declValList
         run block
         currentState <- get
-        put $ updateState savedState currentState declList [] []
+        put $ updateState savedState currentState declList
         return ()
 
 instance Evaluatable PASTFactor where
@@ -368,14 +365,14 @@ instance Runnable PASTStatement where
             _ -> liftIO $ throwIO $ RuntimeError $ "WHILE expression evaluated to non-bool "
                            ++ show expr ++ " = " ++ show value'
         when value $ run stmnt >> run self
-    run (PASTForStatement varName range@(PASTForTo from' to') stmnt') = do
+    run (PASTForStatement varName (PASTForTo from' to') stmnt') = do
         from <- evalExpr from'
         to1 <- evalExpr to'
         to <- callAdd to1 (ValuebleInteger 1)
         assignVar varName from
         let stmnt = run stmnt' >> incVar varName
         runFor varName to stmnt
-    run (PASTForStatement varName range@(PASTForDownto from' to') stmnt') = do
+    run (PASTForStatement varName (PASTForDownto from' to') stmnt') = do
         from <- evalExpr from'
         to1 <- evalExpr to'
         to <- callSub to1 (ValuebleInteger 1)
@@ -386,29 +383,18 @@ instance Runnable PASTStatement where
 updateState :: InterpreterState
             -> InterpreterState
             -> [PASTDeclVar] -- -> [PASTDeclConst]
-            -> [PASTFunctionalDecl] -> [PASTFunctionalDecl]
             -> InterpreterState
 updateState ~(InterpreterState oldVarValues oldFunDecls oldProcDecls)
-            ~(InterpreterState newVarValues newFunDecls newProcDecls)
-            varDecls functionDecls procDecls = do
+            ~(InterpreterState newVarValues _ _)
+            varDecls = do
 
     let varIsLocal varName = varName `elem` (varDeclName <$> varDecls)
-    let funcIsLocal funName = funName `elem` (functionName <$> functionDecls)
-    let procIsLocal procName = procName `elem` (functionName <$> procDecls)
 
     let chooseVar key oldValue newValue =
             if varIsLocal key then oldValue else newValue
 
-    let chooseFunc key oldValue newValue =
-            if funcIsLocal key then oldValue else newValue
-
-    let chooseProc key oldValue newValue =
-            if procIsLocal key then oldValue else newValue
-
     let varValues = intersectionWithKey chooseVar oldVarValues newVarValues
-    let funcDecls = intersectionWithKey chooseFunc oldFunDecls newFunDecls
-    let procDecls = intersectionWithKey chooseProc oldFunDecls newFunDecls
-    InterpreterState varValues funcDecls procDecls
+    InterpreterState varValues oldFunDecls oldProcDecls
 
 
 splitFuncProcDecls :: [PASTFunctionalDecl]
@@ -435,8 +421,9 @@ instance Runnable PASTProgramBlock where
         run block
 
         currentState <- get
-        put (updateState oldState currentState varDecls funDecls procDecls)
+        put (updateState oldState currentState varDecls)
 
+--- Well, simple AST interpreter
 runProgram :: PASTProgram -> IO ()
 runProgram prog = do
     let evaluate = runStateT $ run (programBlock prog)

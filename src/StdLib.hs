@@ -117,6 +117,8 @@ callAsserts args' evaluator = do
         (return ())
         (zip args' args)
 
+--- Called on every procedure call.
+--- If procedure name is a known procedure from standard library - Just calls it. Returns Nothing instead.
 checkStandardProcCall :: String
                       -> [PASTExpression]
                       -> (PASTExpression -> ExecutionMonad Valueble)

@@ -1,6 +1,5 @@
 module Formatter ( pascalFormat
                  , inplaceRender
-                 , render
                  ) where
 
 import Grammar
@@ -11,6 +10,8 @@ class Renderable a where
     render :: a -> [String]
 
 class InplaceRenderable a where
+    --- Returns a readable String representation of the PASTExpressions and etc.
+    --- Used for inplace rendering in error messages, program formatting...
     inplaceRender :: a -> String
 
 instance InplaceRenderable RelationalOperator where
@@ -213,5 +214,7 @@ instance Renderable PASTProgram where
         where
             emplaceDot = appendLastLine "."
 
+--- Formatter for Pascal AST (aka PASTProgram)
+--- returns list of lines of the result source code
 pascalFormat :: PASTProgram -> [String]
 pascalFormat = render

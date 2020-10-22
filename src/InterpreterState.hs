@@ -14,8 +14,6 @@ module InterpreterState ( ExecutionMonad
                         , declFunctions
                         , declProc
                         , declProcedures
-                        , undeclVar
-                        , undeclVars
                         , assertTypeMatch
                         , PASTEvaluatedVariable (..)
                         , updateVariable
@@ -28,19 +26,23 @@ import Control.Exception (Exception, throwIO)
 import Control.Monad.State (MonadIO (liftIO), MonadState (get, put), StateT)
 import Data.Array ((//))
 import Data.List (foldl')
-import Data.Map (Map, delete, fromList, insert, lookup)
+import Data.Map (Map, fromList, insert, lookup)
 
+--- Pascal Interpreter state, as part of ExecutionMonad
 data InterpreterState = InterpreterState
     { stateVarValues      :: Map String Valueble
     , stateDeclFunctions  :: Map String PASTFunctionalDecl
     , stateDeclProcedures :: Map String PASTFunctionalDecl
     } deriving (Show)
 
+--- Returns new InterpreterState
 newInterpreterState :: InterpreterState
 newInterpreterState = InterpreterState (fromList []) (fromList []) (fromList [])
 
+--- Interpreter's execution monad
 type ExecutionMonad a = StateT InterpreterState IO a
 
+--- Runtime error exception type
 newtype RuntimeError = RuntimeError String
 
 instance Show RuntimeError where
@@ -63,6 +65,8 @@ assertTypeMatch value typ =
                        ++ ", got " ++ show value
 
 
+--- Returns variable value from ExecutionMonad
+--- Throws RuntimeError when variable not found
 getVarValue :: String
             -> ExecutionMonad Valueble
 getVarValue varName = do
@@ -72,6 +76,8 @@ getVarValue varName = do
         Nothing  -> liftIO $ throwIO $ RuntimeError $ "Cannot find variable, named " ++ show varName
         Just res -> return res
 
+--- Check types equality and assigns variable within ExecutionMonad
+--- Throws RuntimeError when types mismatched
 assignVar :: String
           -> Valueble
           -> ExecutionMonad ()
@@ -92,6 +98,8 @@ assignVar varName varValue = do
     let newMap = insert varName varValue varValues
     put state { stateVarValues = newMap }
 
+--- Returns function from ExecutionMonad state
+--- Throws RuntimeError when function not found
 getFunction :: String
             -> ExecutionMonad PASTFunctionalDecl
 getFunction funcName = do
@@ -101,6 +109,8 @@ getFunction funcName = do
         Nothing  -> liftIO $ throwIO $ RuntimeError $ "No such function, named " ++ show funcName
         Just res -> return res
 
+--- Returns procedure from ExecutionMonad state
+--- Throws RuntimeError when function not found
 getProcedure :: String
              -> ExecutionMonad PASTFunctionalDecl
 getProcedure funName = do
@@ -110,6 +120,7 @@ getProcedure funName = do
         Nothing  -> liftIO $ throwIO $ RuntimeError $ "No such function, named " ++ show funName
         Just res -> return res
 
+--- Declares variable with specified initial value within ExecutionMonad
 declVar :: PASTDeclVar
         -> Valueble
         -> ExecutionMonad ()
@@ -119,6 +130,7 @@ declVar ~(PASTDeclVar varName varType) value = do
     let newMap = insert varName value valuesMap
     put state { stateVarValues = newMap }
 
+--- Declares multiple variables with specified initial values within ExecutionMonad
 declVars :: [PASTDeclVar]
          -> [Valueble]
          -> ExecutionMonad ()
@@ -128,6 +140,7 @@ declVars vars vals =
            (return ())
            (zip vars vals)
 
+--- Declares const with specified initial value within ExecutionMonad
 declConst :: PASTDeclConst
           -> ExecutionMonad ()
 declConst ~(PASTDeclConst name value) = do
@@ -135,12 +148,14 @@ declConst ~(PASTDeclConst name value) = do
     let newMap = insert name value valuesMap
     put state { stateVarValues = newMap }
 
+--- Declares multiple consts within ExecutionMonad
 declConsts :: [PASTDeclConst]
            -> ExecutionMonad ()
 declConsts =
     foldl' (\acc decl -> acc >> declConst decl)
            (return ())
 
+--- Declares function within ExecutionMonad
 declFunc :: PASTFunctionalDecl
          -> ExecutionMonad ()
 declFunc ~self@(PASTDeclFunction name _ _ _) = do
@@ -148,12 +163,14 @@ declFunc ~self@(PASTDeclFunction name _ _ _) = do
     let newMap = insert name self funDecls
     put state { stateDeclFunctions = newMap }
 
+--- Declares multiple functions within ExecutionMonad
 declFunctions :: [PASTFunctionalDecl]
               -> ExecutionMonad ()
 declFunctions =
     foldl' (\acc decl -> acc >> declFunc decl)
            (return ())
 
+--- Declares procedure within ExecutionMonad
 declProc :: PASTFunctionalDecl
          -> ExecutionMonad ()
 declProc ~self@(PASTDeclProcedure name _ _) = do
@@ -161,30 +178,21 @@ declProc ~self@(PASTDeclProcedure name _ _) = do
     let newMap = insert name self procDecls
     put state { stateDeclProcedures = newMap }
 
+--- Declares multiple procedures within ExecutionMonad
 declProcedures :: [PASTFunctionalDecl]
                -> ExecutionMonad ()
 declProcedures =
     foldl' (\acc decl -> acc >> declProc decl)
            (return ())
 
-undeclVar :: String
-          -> ExecutionMonad ()
-undeclVar varName = do
-    state@(InterpreterState valuesMap _ _) <- get
-    let newMap = delete varName valuesMap
-    put state { stateVarValues = newMap }
-
-undeclVars :: [String]
-           -> ExecutionMonad ()
-undeclVars =
-    foldl' (\acc newName -> acc >> undeclVar newName)
-           (return ())
-
+--- Form of PASTVariable with evaluated subscript
 data PASTEvaluatedVariable = PASTEvaluatedVariable
     { varName      :: String
     , varSubscript :: [Valueble]
     } deriving (Eq, Show)
 
+--- Updates variable with Valueble within ExecutionMonad
+--- If variable is an array - uses subscript operator
 updateVariable :: PASTEvaluatedVariable
                -> Valueble
                -> ExecutionMonad ()
