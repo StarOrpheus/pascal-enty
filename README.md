@@ -16,3 +16,4 @@ Available run formats:
 * **pprint** - prints formatted source code
     * Comments are skipped on the lexer phaze
     * Superfluous semicolons are omitted
+* **run** - simply runs program
