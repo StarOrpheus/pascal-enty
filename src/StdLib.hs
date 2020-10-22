@@ -1,5 +1,4 @@
-module StdLib (
-                checkStandardProcCall
+module StdLib ( checkStandardProcCall
               ) where
 
 import Formatter (inplaceRender)
