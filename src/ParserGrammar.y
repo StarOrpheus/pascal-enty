@@ -107,8 +107,7 @@ block
     ;
 
 blockDeclPart
-    : constantDefinitionPart blockDeclPart                                      { combineDecls ($1, [], []) $2 }
-    | variableDeclarationPart blockDeclPart                                     { combineDecls ([], $1, []) $2 }
+    : variableDeclarationPart blockDeclPart                                     { combineDecls ([], $1, []) $2 }
     | procedureAndFunctionDeclarationPart blockDeclPart                         { combineDecls ([], [], [$1]) $2 }
     | {- or no declarations -}                                                  { ([], [], []) }
 
@@ -129,9 +128,6 @@ typeIdentifier
 
 arrayType
    : ARRAY LBRACK subrangeType RBRACK OF typeIdentifier                         { PascalArrayType $3 $6 }
-
-constantDefinitionPart
-    : CONST constantDefinitions                                                 { $2 }
 
 constantDefinitions
     : constantDefinition SEMI                                                   { [$1] }

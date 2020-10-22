@@ -1,10 +1,9 @@
 {I use (very) modified source from http://sandbox.mc.edu/~bennet/cs404/doc/sort_pas.html}
 
 PROGRAM Sort;
-const kek = 5;
 
 VAR
-    i, j, tmp, size: integer;
+    i, j, tmp, size, kek : integer;
     arr: ARRAY [1..50] OF Integer;
 
 { Procedural + IO sample}
@@ -28,6 +27,7 @@ END;
 
 BEGIN
     tmp := 43;
+    kek := tmp div 5;
     ReadArr;
     writeln('Size after procedure call = ', size);
 
@@ -50,6 +50,7 @@ BEGIN
     writeln;
 
     Writeln('Wrong sum = ', wrongSum(42, 16));
+    assert(wrongSum(42, 16) = kek + 42 + 16);
 
     { Check asserts with assert(false); }
 END.
