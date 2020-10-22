@@ -1,5 +1,6 @@
 {
 module LexerGrammar ( Token(..)
+                    , TokenType(..)
                     , scanTokens
                     ) where
 
@@ -7,7 +8,7 @@ import Grammar
 
 }
 
-%wrapper "basic"
+%wrapper "posn"
 
 $A          = [aA]
 $B          = [bB]
@@ -44,80 +45,80 @@ $alpha      = [a-zA-Z]
 tokens :-
     $white+                                         ;
     "{".*"}"                                        ;
-    $A $N $D                                        { \_ -> TokenAND }
-    $A $R $R $A $Y                                  { \_ -> TokenARRAY }
-    $B $E $G $I $N                                  { \_ -> TokenBEGIN }
-    $B $O $O $L $E $A $N                            { \_ -> TokenBOOLEAN }
-    $C $A $S $E                                     { \_ -> TokenCASE }
-    $C $H $A $R                                     { \_ -> TokenCHAR }
-    $C $H $R                                        { \_ -> TokenCHR }
-    $C $O $N $S $T                                  { \_ -> TokenCONST }
-    $D $I $V                                        { \_ -> TokenDIV }
-    $D $O                                           { \_ -> TokenDO }
-    $D $O $W $N $T $O                               { \_ -> TokenDOWNTO }
-    $E $L $S $E                                     { \_ -> TokenELSE }
-    $E $N $D                                        { \_ -> TokenEND }
-    $F $I $L $E                                     { \_ -> TokenFILE }
-    $F $O $R                                        { \_ -> TokenFOR }
-    $F $U $N $C $T $I $O $N                         { \_ -> TokenFUNCTION }
-    $G $O $T $O                                     { \_ -> TokenGOTO }
-    $I $F                                           { \_ -> TokenIF }
-    $I $N                                           { \_ -> TokenIN }
-    $I $N $T $E $G $E $R                            { \_ -> TokenINTEGER }
-    $L $A $B $E $L                                  { \_ -> TokenLABEL }
-    $M $O $D                                        { \_ -> TokenMOD }
-    $N $I $L                                        { \_ -> TokenNIL }
-    $N $O $T                                        { \_ -> TokenNOT }
-    $O $F                                           { \_ -> TokenOF }
-    $O $R                                           { \_ -> TokenOR }
-    $P $A $C $K $E $D                               { \_ -> TokenPACKED }
-    $P $R $O $C $E $D $U $R $E                      { \_ -> TokenPROCEDURE }
-    $P $R $O $G $R $A $M                            { \_ -> TokenPROGRAM }
-    $R $E $A $L                                     { \_ -> TokenREAL }
-    $R $E $C $O $R $D                               { \_ -> TokenRECORD }
-    $R $E $P $E $A $T                               { \_ -> TokenREPEAT }
-    $S $E $T                                        { \_ -> TokenSET }
-    $T $H $E $N                                     { \_ -> TokenTHEN }
-    $T $O                                           { \_ -> TokenTO }
-    $T $Y $P $E                                     { \_ -> TokenTYPE }
-    $U $N $T $I $L                                  { \_ -> TokenUNTIL }
-    $V $A $R                                        { \_ -> TokenVAR }
-    $W $H $I $L $E                                  { \_ -> TokenWHILE }
-    $W $I $T $H                                     { \_ -> TokenWITH }
-    $U $N $I $T                                     { \_ -> TokenUNIT }
-    $I $N $T $E $R $F $A $C $E                      { \_ -> TokenINTERFACE }
-    $U $S $E $S                                     { \_ -> TokenUSES }
-    $S $T $R $I $N $G                               { \_ -> TokenSTRING }
-    $I $M $P $L $E $M $E $N $T $A $T $I $O $N       { \_ -> TokenIMPLEMENTATION }
-    $T $R $U $E                                     { \_ -> TokenTRUE }
-    $F $A $L $S $E                                  { \_ -> TokenFALSE }
-    \+                                              { \_ -> TokenPLUS }
-    \-                                              { \_ -> TokenMINUS }
-    \*                                              { \_ -> TokenSTAR }
-    \/                                              { \_ -> TokenSLASH }
-    \: \=                                           { \_ -> TokenASSIGN }
-    \,                                              { \_ -> TokenCOMMA }
-    \;                                              { \_ -> TokenSEMI }
-    \:                                              { \_ -> TokenCOLON }
-    \=                                              { \_ -> TokenEQ }
-    \< \>                                           { \_ -> TokenNEQ }
-    \<                                              { \_ -> TokenLT }
-    \>                                              { \_ -> TokenGT }
-    \> \=                                           { \_ -> TokenGE }
-    \< \=                                           { \_ -> TokenLE }
-    \(                                              { \_ -> TokenLPAREN }
-    \)                                              { \_ -> TokenRPAREN }
-    \[                                              { \_ -> TokenLBRACKET }
-    \]                                              { \_ -> TokenRBRACKET }
-    \.                                              { \_ -> TokenDOT }
-    \. \.                                           { \_ -> TokenDOTDOT }
-    $alpha ([a-zA-Z0-9_])*                          { \s -> TokenIdentifier s}
-    $digit+                                         { \s -> TokenInteger (read s) }
-    \' (\'\' | ~[\'])* \'                           { \s -> TokenString s }
-    $digit+ \. $digit+                              {\s -> TokenReal (read s) }
+    $A $N $D                                        { \pos _ -> Token TokenAND pos }
+    $A $R $R $A $Y                                  { \pos _ -> Token TokenARRAY pos }
+    $B $E $G $I $N                                  { \pos _ -> Token TokenBEGIN pos }
+    $B $O $O $L $E $A $N                            { \pos _ -> Token TokenBOOLEAN pos }
+    $C $A $S $E                                     { \pos _ -> Token TokenCASE pos }
+    $C $H $A $R                                     { \pos _ -> Token TokenCHAR pos }
+    $C $H $R                                        { \pos _ -> Token TokenCHR pos }
+    $C $O $N $S $T                                  { \pos _ -> Token TokenCONST pos }
+    $D $I $V                                        { \pos _ -> Token TokenDIV pos }
+    $D $O                                           { \pos _ -> Token TokenDO pos }
+    $D $O $W $N $T $O                               { \pos _ -> Token TokenDOWNTO pos }
+    $E $L $S $E                                     { \pos _ -> Token TokenELSE pos }
+    $E $N $D                                        { \pos _ -> Token TokenEND pos }
+    $F $I $L $E                                     { \pos _ -> Token TokenFILE pos }
+    $F $O $R                                        { \pos _ -> Token TokenFOR pos }
+    $F $U $N $C $T $I $O $N                         { \pos _ -> Token TokenFUNCTION pos }
+    $G $O $T $O                                     { \pos _ -> Token TokenGOTO pos }
+    $I $F                                           { \pos _ -> Token TokenIF pos }
+    $I $N                                           { \pos _ -> Token TokenIN pos }
+    $I $N $T $E $G $E $R                            { \pos _ -> Token TokenINTEGER pos }
+    $L $A $B $E $L                                  { \pos _ -> Token TokenLABEL pos }
+    $M $O $D                                        { \pos _ -> Token TokenMOD pos }
+    $N $I $L                                        { \pos _ -> Token TokenNIL pos }
+    $N $O $T                                        { \pos _ -> Token TokenNOT pos }
+    $O $F                                           { \pos _ -> Token TokenOF pos }
+    $O $R                                           { \pos _ -> Token TokenOR pos }
+    $P $A $C $K $E $D                               { \pos _ -> Token TokenPACKED pos }
+    $P $R $O $C $E $D $U $R $E                      { \pos _ -> Token TokenPROCEDURE pos }
+    $P $R $O $G $R $A $M                            { \pos _ -> Token TokenPROGRAM pos }
+    $R $E $A $L                                     { \pos _ -> Token TokenREAL pos }
+    $R $E $C $O $R $D                               { \pos _ -> Token TokenRECORD pos }
+    $R $E $P $E $A $T                               { \pos _ -> Token TokenREPEAT pos }
+    $S $E $T                                        { \pos _ -> Token TokenSET pos }
+    $T $H $E $N                                     { \pos _ -> Token TokenTHEN pos }
+    $T $O                                           { \pos _ -> Token TokenTO pos }
+    $T $Y $P $E                                     { \pos _ -> Token TokenTYPE pos }
+    $U $N $T $I $L                                  { \pos _ -> Token TokenUNTIL pos }
+    $V $A $R                                        { \pos _ -> Token TokenVAR pos }
+    $W $H $I $L $E                                  { \pos _ -> Token TokenWHILE pos }
+    $W $I $T $H                                     { \pos _ -> Token TokenWITH pos }
+    $U $N $I $T                                     { \pos _ -> Token TokenUNIT pos }
+    $I $N $T $E $R $F $A $C $E                      { \pos _ -> Token TokenINTERFACE pos }
+    $U $S $E $S                                     { \pos _ -> Token TokenUSES pos }
+    $S $T $R $I $N $G                               { \pos _ -> Token TokenSTRING pos }
+    $I $M $P $L $E $M $E $N $T $A $T $I $O $N       { \pos _ -> Token TokenIMPLEMENTATION pos }
+    $T $R $U $E                                     { \pos _ -> Token TokenTRUE pos }
+    $F $A $L $S $E                                  { \pos _ -> Token TokenFALSE pos }
+    \+                                              { \pos _ -> Token TokenPLUS pos }
+    \-                                              { \pos _ -> Token TokenMINUS pos }
+    \*                                              { \pos _ -> Token TokenSTAR pos }
+    \/                                              { \pos _ -> Token TokenSLASH pos }
+    \: \=                                           { \pos _ -> Token TokenASSIGN pos }
+    \,                                              { \pos _ -> Token TokenCOMMA pos }
+    \;                                              { \pos _ -> Token TokenSEMI pos }
+    \:                                              { \pos _ -> Token TokenCOLON pos }
+    \=                                              { \pos _ -> Token TokenEQ pos }
+    \< \>                                           { \pos _ -> Token TokenNEQ pos }
+    \<                                              { \pos _ -> Token TokenLT pos }
+    \>                                              { \pos _ -> Token TokenGT pos }
+    \> \=                                           { \pos _ -> Token TokenGE pos }
+    \< \=                                           { \pos _ -> Token TokenLE pos }
+    \(                                              { \pos _ -> Token TokenLPAREN pos }
+    \)                                              { \pos _ -> Token TokenRPAREN pos }
+    \[                                              { \pos _ -> Token TokenLBRACKET pos }
+    \]                                              { \pos _ -> Token TokenRBRACKET pos }
+    \.                                              { \pos _ -> Token TokenDOT pos }
+    \. \.                                           { \pos _ -> Token TokenDOTDOT pos }
+    $alpha ([a-zA-Z0-9_])*                          { \pos s -> Token (TokenIdentifier s) pos }
+    $digit+                                         { \pos s -> Token (TokenInteger (read s)) pos }
+    \' (\'\' | ~[\'])* \'                           { \pos s -> Token (TokenString s) pos }
+    $digit+ \. $digit+                              { \pos s -> Token (TokenReal (read s)) pos }
 
 {
-data Token =
+data TokenType =
       TokenAND | TokenARRAY | TokenBEGIN | TokenBOOLEAN
     | TokenCASE | TokenCHAR | TokenCHR | TokenCONST
     | TokenDIV | TokenDO | TokenDOWNTO | TokenELSE
@@ -141,6 +142,16 @@ data Token =
     | TokenString String
     | TokenReal Double
     deriving (Eq, Show)
+
+data Token = Token
+    { tokenType         :: TokenType
+    , sourceLocation    :: AlexPosn
+    } deriving (Eq)
+
+instance Show Token where
+    show (Token tokenType ~(AlexPn offset lineNum colNum)) =
+         (show tokenType)
+     ++ "(" ++ show lineNum ++ "; " ++ show colNum ++ ")"
 
 scanTokens :: String -> [Token]
 scanTokens = alexScanTokens

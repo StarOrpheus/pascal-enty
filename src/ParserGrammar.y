@@ -16,77 +16,77 @@ import Control.Monad.Except
 %error { parseError }
 %monad { Except String } { (>>=) } { return }
 
-%token AND                                      { TokenAND }
-%token ARRAY                                    { TokenARRAY }
-%token BEGIN                                    { TokenBEGIN }
-%token BOOLEAN                                  { TokenBOOLEAN }
-%token CASE                                     { TokenCASE }
-%token CHAR                                     { TokenCHAR }
-%token CHR                                      { TokenCHR }
-%token CONST                                    { TokenCONST }
-%token DIV                                      { TokenDIV }
-%token DO                                       { TokenDO }
-%token DOWNTO                                   { TokenDOWNTO }
-%token ELSE                                     { TokenELSE }
-%token END                                      { TokenEND }
-%token FILE                                     { TokenFILE }
-%token FOR                                      { TokenFOR }
-%token FUNCTION                                 { TokenFUNCTION }
-%token GOTO                                     { TokenGOTO }
-%token IF                                       { TokenIF }
-%token IN                                       { TokenIN }
-%token INTEGER                                  { TokenINTEGER }
-%token LABEL                                    { TokenLABEL }
-%token MOD                                      { TokenMOD }
-%token NIL                                      { TokenNIL }
-%token NOT                                      { TokenNOT }
-%token OF                                       { TokenOF }
-%token OR                                       { TokenOR }
-%token PACKED                                   { TokenPACKED }
-%token PROCEDURE                                { TokenPROCEDURE }
-%token PROGRAM                                  { TokenPROGRAM }
-%token REAL                                     { TokenREAL }
-%token RECORD                                   { TokenRECORD }
-%token REPEAT                                   { TokenREPEAT }
-%token SET                                      { TokenSET }
-%token THEN                                     { TokenTHEN }
-%token TO                                       { TokenTO }
-%token TYPE                                     { TokenTYPE }
-%token UNTIL                                    { TokenUNTIL }
-%token VAR                                      { TokenVAR }
-%token WHILE                                    { TokenWHILE }
-%token WITH                                     { TokenWITH }
-%token UNIT                                     { TokenUNIT }
-%token INTERFACE                                { TokenINTERFACE }
-%token USES                                     { TokenUSES }
-%token STRING                                   { TokenSTRING }
-%token IMPLEMENTATION                           { TokenIMPLEMENTATION }
-%token TRUE                                     { TokenTRUE }
-%token FALSE                                    { TokenFALSE }
-%token PLUS                                     { TokenPLUS }
-%token MINUS                                    { TokenMINUS }
-%token STAR                                     { TokenSTAR }
-%token SLASH                                    { TokenSLASH }
-%token ASSIGN                                   { TokenASSIGN }
-%token COMMA                                    { TokenCOMMA }
-%token SEMI                                     { TokenSEMI }
-%token COLON                                    { TokenCOLON }
-%token EQ                                       { TokenEQ }
-%token NEQ                                      { TokenNEQ }
-%token LT                                       { TokenLT }
-%token GT                                       { TokenGT }
-%token GE                                       { TokenGE }
-%token LE                                       { TokenLE }
-%token LPAREN                                   { TokenLPAREN }
-%token RPAREN                                   { TokenRPAREN }
-%token LBRACK                                   { TokenLBRACKET }
-%token RBRACK                                   { TokenRBRACKET }
-%token DOT                                      { TokenDOT }
-%token DOTDOT                                   { TokenDOTDOT }
-%token Identifier                               { TokenIdentifier $$ }
-%token Integer                                  { TokenInteger $$ }
-%token String                                   { TokenString $$ }
-%token Real                                     { TokenReal $$ }
+%token AND                                      { Token TokenAND _ }
+%token ARRAY                                    { Token TokenARRAY _ }
+%token BEGIN                                    { Token TokenBEGIN _ }
+%token BOOLEAN                                  { Token TokenBOOLEAN _ }
+%token CASE                                     { Token TokenCASE _ }
+%token CHAR                                     { Token TokenCHAR _ }
+%token CHR                                      { Token TokenCHR _ }
+%token CONST                                    { Token TokenCONST _ }
+%token DIV                                      { Token TokenDIV _ }
+%token DO                                       { Token TokenDO _ }
+%token DOWNTO                                   { Token TokenDOWNTO _ }
+%token ELSE                                     { Token TokenELSE _ }
+%token END                                      { Token TokenEND _ }
+%token FILE                                     { Token TokenFILE _ }
+%token FOR                                      { Token TokenFOR _ }
+%token FUNCTION                                 { Token TokenFUNCTION _ }
+%token GOTO                                     { Token TokenGOTO _ }
+%token IF                                       { Token TokenIF _ }
+%token IN                                       { Token TokenIN _ }
+%token INTEGER                                  { Token TokenINTEGER _ }
+%token LABEL                                    { Token TokenLABEL _ }
+%token MOD                                      { Token TokenMOD _ }
+%token NIL                                      { Token TokenNIL _ }
+%token NOT                                      { Token TokenNOT _ }
+%token OF                                       { Token TokenOF _ }
+%token OR                                       { Token TokenOR _ }
+%token PACKED                                   { Token TokenPACKED _ }
+%token PROCEDURE                                { Token TokenPROCEDURE _ }
+%token PROGRAM                                  { Token TokenPROGRAM _ }
+%token REAL                                     { Token TokenREAL _ }
+%token RECORD                                   { Token TokenRECORD _ }
+%token REPEAT                                   { Token TokenREPEAT _ }
+%token SET                                      { Token TokenSET _ }
+%token THEN                                     { Token TokenTHEN _ }
+%token TO                                       { Token TokenTO _ }
+%token TYPE                                     { Token TokenTYPE _ }
+%token UNTIL                                    { Token TokenUNTIL _ }
+%token VAR                                      { Token TokenVAR _ }
+%token WHILE                                    { Token TokenWHILE _ }
+%token WITH                                     { Token TokenWITH _ }
+%token UNIT                                     { Token TokenUNIT _ }
+%token INTERFACE                                { Token TokenINTERFACE _ }
+%token USES                                     { Token TokenUSES _ }
+%token STRING                                   { Token TokenSTRING _ }
+%token IMPLEMENTATION                           { Token TokenIMPLEMENTATION _ }
+%token TRUE                                     { Token TokenTRUE _ }
+%token FALSE                                    { Token TokenFALSE _ }
+%token PLUS                                     { Token TokenPLUS _ }
+%token MINUS                                    { Token TokenMINUS _ }
+%token STAR                                     { Token TokenSTAR _ }
+%token SLASH                                    { Token TokenSLASH _ }
+%token ASSIGN                                   { Token TokenASSIGN _ }
+%token COMMA                                    { Token TokenCOMMA _ }
+%token SEMI                                     { Token TokenSEMI _ }
+%token COLON                                    { Token TokenCOLON _ }
+%token EQ                                       { Token TokenEQ _ }
+%token NEQ                                      { Token TokenNEQ _ }
+%token LT                                       { Token TokenLT _ }
+%token GT                                       { Token TokenGT _ }
+%token GE                                       { Token TokenGE _ }
+%token LE                                       { Token TokenLE _ }
+%token LPAREN                                   { Token TokenLPAREN _ }
+%token RPAREN                                   { Token TokenRPAREN _ }
+%token LBRACK                                   { Token TokenLBRACKET _ }
+%token RBRACK                                   { Token TokenRBRACKET _ }
+%token DOT                                      { Token TokenDOT _ }
+%token DOTDOT                                   { Token TokenDOTDOT _ }
+%token Identifier                               { Token (TokenIdentifier $$) _ }
+%token Integer                                  { Token (TokenInteger $$) _ }
+%token String                                   { Token (TokenString $$) _ }
+%token Real                                     { Token (TokenReal $$) _ }
 
 %%
 
@@ -289,7 +289,7 @@ bool
 
 {
 parseError :: [Token] -> Except String a
-parseError (l:ls) = throwError $ "Unexpected token: " ++ (show l) ++ " and " ++ (show $ 1 + length ls) ++ " left"
+parseError (l:ls) = throwError $ "Syntax error: unexpected token " ++ (show l) ++ " and " ++ (show $ length ls) ++ " left"
 parseError [] = throwError "Unexpected EOF"
 
 parseTokens :: [Token] -> Either String PASTProgram
