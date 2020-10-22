@@ -42,9 +42,14 @@ BEGIN
                 arr[j + 1] := tmp;
             END;
 
+    for i := 2 to size do
+        assert(arr[i-1] <= arr[i]);
+
     FOR i := 1 TO size DO
         Write(arr[i], ' ');
     writeln;
 
     Writeln('Wrong sum = ', wrongSum(42, 16));
+
+    { Check asserts with assert(false); }
 END.
