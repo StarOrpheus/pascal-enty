@@ -13,6 +13,7 @@ BEGIN
     tmp := 42;
 	readln(size);
     writeln('Size == ', size);
+    assert(size <= 50);
     for i := 1 to size do
     BEGIN
         Readln(arr[i]);
@@ -28,6 +29,26 @@ END;
 BEGIN
     tmp := 43;
     kek := tmp div 5;
+
+    assert(kek < tmp,
+           tmp > kek,
+           kek <= tmp,
+           tmp >= kek,
+           tmp <> kek);
+    tmp := kek;
+    assert(not (kek < tmp),
+           not (tmp > kek),
+           not (kek > tmp),
+           not (tmp < kek),
+           tmp = kek,
+           not (tmp <> kek));
+
+    tmp := 43;
+    assert(tmp = 43,
+           tmp * 2 = 86,
+           tmp div 3 = 14,
+           tmp mod 3 = 1);
+
     ReadArr;
     writeln('Size after procedure call = ', size);
 
