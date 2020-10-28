@@ -50,7 +50,7 @@ extractVarReader val =
     case val of
         ValuebleInteger _ -> liftIO $ ValuebleInteger <$> readLn
         ValuebleReal _ -> liftIO $ ValuebleReal <$> readLn
-        ValuebleString _ -> liftIO $ ValuebleString <$> readLn
+        ValuebleString _ -> liftIO $ ValuebleString <$> getLine
         ValuebleChar _ -> liftIO $ ValuebleChar <$> readLn
         ValuebleBool _ -> liftIO $ ValuebleBool <$> readLn
         _ -> liftIO $ throwIO $ RuntimeError $ "Can't read type of " ++ inplaceRender val
