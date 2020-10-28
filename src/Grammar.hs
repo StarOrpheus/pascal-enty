@@ -58,7 +58,15 @@ data Valueble = ValuebleInteger Int
               | ValuebleBool    Bool
               | ValuebleChar    Char
               | ValuebleArray   (Array Int Valueble)
-              deriving (Eq, Show)
+              deriving (Eq)
+
+instance Show Valueble where
+    show (ValuebleInteger i) = show i
+    show (ValuebleReal i) = show i
+    show (ValuebleString s) = s
+    show (ValuebleBool i) = show i
+    show (ValuebleChar i) = show i
+    show (ValuebleArray i) = show i
 
 --- Pascal type representation
 data PascalType = PascalSubrangeType Int Int

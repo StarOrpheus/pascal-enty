@@ -9,23 +9,12 @@ import Control.Exception (throwIO)
 import Control.Monad.State
 import Data.List (foldl')
 
-showValueble :: Valueble
-             -> String
-showValueble val = case val of
-    ValuebleString s -> do
-        let len = length s
-        take (len - 2) (drop 1 s)
-    ValuebleInteger x -> show x
-    ValuebleReal x -> show x
-    ValuebleBool x -> show x
-    ValuebleChar c -> show c
-
 callWrite :: [PASTExpression]
           -> (PASTExpression -> ExecutionMonad Valueble)
           -> ExecutionMonad ()
 callWrite args' evaluator = do
     args <- traverse evaluator args'
-    let str = showValueble =<< args
+    let str = show =<< args
     liftIO $ putStr str
 
 callWriteLn :: [PASTExpression]

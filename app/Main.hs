@@ -26,7 +26,6 @@ interpret fileName = do
         Left error -> putStrLn error
         Right ast  -> runProgram ast
 
-
 pprint :: FilePath -> IO ()
 pprint fileName = do
     code <- readContent fileName

@@ -114,7 +114,7 @@ tokens :-
     \. \.                                           { \pos _ -> Token TokenDOTDOT pos }
     $alpha ([a-zA-Z0-9_])*                          { \pos s -> Token (TokenIdentifier s) pos }
     $digit+                                         { \pos s -> Token (TokenInteger (read s)) pos }
-    \' (\'\' | ~[\'])* \'                           { \pos s -> Token (TokenString s) pos }
+    \' (\'\' | ~[\'])* \'                           { \pos s -> Token (TokenString (tail (init s))) pos }
     $digit+ \. $digit+                              { \pos s -> Token (TokenReal (read s)) pos }
 
 {
